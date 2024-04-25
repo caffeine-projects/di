@@ -1,4 +1,4 @@
-name: CI
+name: ci
 
 on:
   workflow_dispatch:
@@ -22,33 +22,34 @@ concurrency:
 
 jobs:
   build:
+    name: build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: checkout
         uses: actions/checkout@v4
 
-      - name: Use Node
+      - name: node
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
           cache-dependency-path: package.json
 
-      - name: Install
+      - name: install
         run: |
-          npm install --ignore-scripts --ci
+          npm install --no-package-lock --ignore-scripts
 
-      - name: Lint
+      - name: lint
         run: |
           npm run fmt:check
           npm run lint
   
-      - name: Build
+      - name: build
         run: |
           npm run build
 
   test:
-    name: Node on ${{ matrix.os }}
+    name: test on ${{ matrix.os }} @ ${{ matrix.node-version }}
     runs-on: ${{ matrix.os }}
     needs: build
 
@@ -58,20 +59,20 @@ jobs:
         node-version: ['20', 'current']
 
     steps:
-      - name: Checkout
+      - name: checkout
         uses: actions/checkout@v4
 
-      - name: Use Node
+      - name: node
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
           cache-dependency-path: package.json
 
-      - name: Install
+      - name: install
         run: |
-          npm install --ignore-scripts --ci
+          npm install --no-package-lock --ignore-scripts
 
-      - name: Test
+      - name: test
         run: |
           npm run test:ci
