@@ -128,3 +128,26 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Mac
+.DS_Store
+
+# Rollup
+.rollup.cache
+
+# Project
+.run/
+.clinic/
+.vscode/
+.idea/
+.temp/
+.local/
+
+.npmrc
+package-lock.json
+playground.js
+playground.ts
+
+# Dist
+dist/
+out/
