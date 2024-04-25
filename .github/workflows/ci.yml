@@ -59,7 +59,7 @@ jobs:
     strategy:
       matrix:
         os: [ macos-latest, ubuntu-latest, windows-latest ]
-        node-version: ['20', 'current']
+        node-version: [ '18', '20' ]
 
     steps:
       - name: checkout
