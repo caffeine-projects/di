@@ -53,6 +53,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     needs: build
 
+    permissions:
+      contents: read
+
     strategy:
       matrix:
         os: [ macos-latest, ubuntu-latest, windows-latest ]
