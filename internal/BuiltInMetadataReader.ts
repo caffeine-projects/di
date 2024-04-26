@@ -16,7 +16,7 @@ export class BuiltInMetadataReader implements MetadataReader {
         for (let i = 0; i < deps.length; i++) {
           const d = deps[i]
           if (typeof d === 'object') {
-            injections[i]= d
+            injections[i] = d
           } else {
             injections[i] = { token: d, tokenType: d }
           }

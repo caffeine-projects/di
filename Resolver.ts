@@ -96,9 +96,7 @@ export namespace Resolver {
       )
     }
 
-    const resolution: unknown = !dep.multiple
-      ? container.get(dep.token, args)
-      : container.getMany(dep.token, args)
+    const resolution: unknown = !dep.multiple ? container.get(dep.token, args) : container.getMany(dep.token, args)
 
     if (resolution !== undefined && resolution !== null) {
       return resolution as T

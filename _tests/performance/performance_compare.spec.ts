@@ -23,7 +23,7 @@ describe('Performance Compare', function () {
     avg: number
     max: number
     min: number
-    items: Array<{ pos: number, total: number }>
+    items: Array<{ pos: number; total: number }>
   }
 
   function resolve(times: number, res: () => unknown): Results {
