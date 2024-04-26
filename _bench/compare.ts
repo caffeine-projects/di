@@ -1,6 +1,6 @@
 import 'reflect-metadata'
 import cronometro from 'cronometro'
-import { printResults } from '@caffeinejs/internal-perf'
+import { printResults } from './printResults.js'
 import { errorThreshold } from './vars.js'
 import { connections } from './vars.js'
 import { TsyRoot } from './_fixtures/tsyringe.js'

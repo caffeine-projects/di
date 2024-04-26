@@ -4,14 +4,14 @@ import { getParamTypes } from './getParamTypes.js'
 
 export function configureInjectionMetadata(
   tokenSpec: Partial<TokenSpec<unknown>>,
-): <TFunction>(target: TFunction, propertyKey: string | symbol, parameterIndex?: number | PropertyDescriptor) => void {
-  return function (target: any, propertyKey: string | symbol, parameterIndex?: number | PropertyDescriptor): void {
+): <TFunction>(target: TFunction, propertyKey: string | symbol | undefined, parameterIndex?: number | PropertyDescriptor) => void {
+  return function (target: any, propertyKey: string | symbol | undefined, parameterIndex?: number | PropertyDescriptor): void {
     // Parameter decorator
     // --
     if (typeof parameterIndex === 'number') {
       const descriptors: Record<number, TokenSpec<unknown>> = (typeof target === 'function'
         ? Reflect.getOwnMetadata(Vars.CLASS_CTOR_INJECTION_TOKENS, target)
-        : Reflect.getOwnMetadata(Vars.CLASS_CTOR_INJECTION_TOKENS, target.constructor, propertyKey)) || {}
+        : Reflect.getOwnMetadata(Vars.CLASS_CTOR_INJECTION_TOKENS, target.constructor, propertyKey as string)) || {}
 
       if (descriptors[parameterIndex]) {
         descriptors[parameterIndex] = { ...descriptors[parameterIndex], ...tokenSpec }
@@ -26,6 +26,11 @@ export function configureInjectionMetadata(
       }
 
       return
+    }
+
+    if (typeof propertyKey === 'undefined') {
+      throw new Error("configureInjectionMetadata: propertyKey is undefined");
+
     }
 
     // Method decorator

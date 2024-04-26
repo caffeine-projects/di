@@ -4,9 +4,7 @@ import { Token } from '../Token.js'
 import { check } from '../internal/utils/check.js'
 
 export function Bag(bag: TokenBag[]): ParameterDecorator {
-  return configureInjectionMetadata({
-    bag,
-  })
+  return configureInjectionMetadata({ bag })
 }
 
 export interface BagItemType {

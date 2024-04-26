@@ -20,6 +20,9 @@ concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  NODE_OPTIONS: --experimental-vm-modules
+
 jobs:
   build:
     name: build
@@ -43,7 +46,7 @@ jobs:
         run: |
           npm run fmt:check
           npm run lint
-  
+
       - name: build
         run: |
           npm run build

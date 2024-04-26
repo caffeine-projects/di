@@ -38,5 +38,11 @@
     ".yarn",
     "assets",
     "coverage"
-  ]
+  ],
+
+  "ts-node": {
+    "experimentalSpecifierResolution": "node",
+    "transpileOnly": true,
+    "esm": true,
+  },
 }

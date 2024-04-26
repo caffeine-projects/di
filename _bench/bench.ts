@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import 'reflect-metadata'
 import Fastify from 'fastify'
 import cronometro from 'cronometro'
 import Supertest from 'supertest'
-import { printResults } from '@caffeinejs/internal-perf'
+import { printResults } from './printResults.js'
 import { DI } from '../DI.js'
 import { Injectable } from '../decorators/Injectable.js'
 import { RequestScope } from '../internal/scopes/RequestScope.js'
@@ -120,44 +122,51 @@ fastify.get('/transient', (req, res) => {
 
 await fastify.ready()
 
-export function makeParallelRequests(n: number, callback: any): Promise<unknown> {
-  return Promise.all(Array.from(Array(n)).map(() => new Promise(callback)))
+function makeParallelRequests(callback: any): Promise<unknown> {
+  return Promise.all(Array.from(Array(parallelRequests)).map(() => new Promise(callback)))
 }
+
+await Supertest(fastify.server).get('/transient').expect(200)
+await Supertest(fastify.server).get('/singleton-no-container').expect(200)
+await Supertest(fastify.server).get('/singleton').expect(200)
+await Supertest(fastify.server).get('/request').expect(200)
+await Supertest(fastify.server).get('/request-with-singleton').expect(200)
+await Supertest(fastify.server).get('/no-container').expect(200)
 
 cronometro(
   {
     transient() {
-      return makeParallelRequests(parallelRequests, (callback: any) =>
+      return makeParallelRequests((callback: any) =>
         Supertest(fastify.server).get('/transient').expect(200).end(callback),
       )
     },
 
     'singleton-no-container'() {
-      return makeParallelRequests(parallelRequests, (callback: any) =>
+      return makeParallelRequests((callback: any) =>
         Supertest(fastify.server).get('/singleton-no-container').expect(200).end(callback),
       )
     },
 
     singleton() {
-      return makeParallelRequests(parallelRequests, (callback: any) =>
+      return makeParallelRequests((callback: any) =>
         Supertest(fastify.server).get('/singleton').expect(200).end(callback),
       )
     },
 
     request() {
-      return makeParallelRequests(parallelRequests, (callback: any) =>
+      return makeParallelRequests((callback: any) =>
         Supertest(fastify.server).get('/request').expect(200).end(callback),
       )
     },
 
     'request-with-singleton'() {
-      return makeParallelRequests(parallelRequests, (callback: any) =>
+      return makeParallelRequests((callback: any) =>
         Supertest(fastify.server).get('/request-with-singleton').expect(200).end(callback),
       )
     },
 
     'no-container'() {
-      return makeParallelRequests(parallelRequests, (callback: any) =>
+      return makeParallelRequests((callback: any) =>
         Supertest(fastify.server).get('/no-container').expect(200).end(callback),
       )
     },
