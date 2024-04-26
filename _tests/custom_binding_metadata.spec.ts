@@ -1,6 +1,6 @@
 import { expect } from '@jest/globals'
 import { DI } from '../DI.js'
-import { DISymbols } from '../DISymbols.js'
+import { Symbols } from '../Symbols.js'
 
 describe('Custom Binding Metadata', function () {
   const kNm = Symbol('nm')
@@ -12,7 +12,7 @@ describe('Custom Binding Metadata', function () {
   class Nm {}
 
   class Root {
-    static get [DISymbols.kDeps]() {
+    static get [Symbols.kDeps]() {
       return [Dep, kNm, { token: Opt, optional: true }]
     }
 

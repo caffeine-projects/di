@@ -1,13 +1,13 @@
 import { Binding } from '../Binding.js'
 import { TokenSpec } from '../Token.js'
 import { MetadataReader } from '../MetadataReader.js'
-import { DISymbols } from '../DISymbols.js'
+import { Symbols } from '../Symbols.js'
 
 export class BuiltInMetadataReader implements MetadataReader {
   read(token: any): Partial<Binding> {
     if (typeof token === 'function') {
       const symbols = Object.getOwnPropertySymbols(token)
-      const kDeps = symbols.find(x => x === DISymbols.kDeps)
+      const kDeps = symbols.find(x => x === Symbols.kDeps)
 
       if (kDeps) {
         const deps = token[kDeps]
