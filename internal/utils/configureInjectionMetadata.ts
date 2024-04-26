@@ -4,8 +4,16 @@ import { getParamTypes } from './getParamTypes.js'
 
 export function configureInjectionMetadata(
   tokenSpec: Partial<TokenSpec<unknown>>,
-): <TFunction>(target: TFunction, propertyKey: string | symbol | undefined, parameterIndex?: number | PropertyDescriptor) => void {
-  return function (target: any, propertyKey: string | symbol | undefined, parameterIndex?: number | PropertyDescriptor): void {
+): <TFunction>(
+  target: TFunction,
+  propertyKey: string | symbol | undefined,
+  parameterIndex?: number | PropertyDescriptor,
+) => void {
+  return function (
+    target: any,
+    propertyKey: string | symbol | undefined,
+    parameterIndex?: number | PropertyDescriptor,
+  ): void {
     // Parameter decorator
     // --
     if (typeof parameterIndex === 'number') {
@@ -29,8 +37,7 @@ export function configureInjectionMetadata(
     }
 
     if (typeof propertyKey === 'undefined') {
-      throw new Error("configureInjectionMetadata: propertyKey is undefined");
-
+      throw new Error('configureInjectionMetadata: propertyKey is undefined')
     }
 
     // Method decorator
