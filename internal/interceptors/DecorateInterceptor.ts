@@ -18,7 +18,6 @@ export class DecorateInterceptor<T> implements PostResolutionInterceptor<T> {
   intercept(instance: T, ctx: ResolutionContext): T {
     const binding = DecorateInterceptor.uniqueBinding(ctx, this.decorator)
     const decoratees = binding.injections.filter(x => x.decorated)
-    const args = []
 
     if (decoratees.length === 0) {
       throw new InvalidBindingError(
@@ -41,13 +40,15 @@ export class DecorateInterceptor<T> implements PostResolutionInterceptor<T> {
       )
     }
 
+    const args = new Array(binding.injections.length)
+
     for (let i = 0; i < binding.injections.length; i++) {
       const injection = binding.injections[i]
 
       if (injection.decorated) {
-        args.push(instance)
+        args[i] = instance
       } else {
-        args.push(Resolver.resolveParam(ctx.container, ctx.token, injection, i, ctx.args))
+        args[i] = Resolver.resolveParam(ctx.container, ctx.token, injection, i, ctx.args)
       }
     }
 

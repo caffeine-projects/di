@@ -1,4 +1,4 @@
-import { injectable } from 'tsyringe'
+import { injectable, singleton } from 'tsyringe'
 import { container as tsy } from 'tsyringe'
 
 @injectable()
@@ -11,6 +11,11 @@ class TsySvc {
 
 @injectable()
 export class TsyRoot {
+  constructor(readonly svc: TsySvc) {}
+}
+
+@singleton()
+export class TsySingletonRoot {
   constructor(readonly svc: TsySvc) {}
 }
 

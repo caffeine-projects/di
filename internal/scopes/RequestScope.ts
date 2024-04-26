@@ -54,7 +54,7 @@ export class RequestScope implements Scope {
   }
 
   remove(binding: Binding): void {
-    this._instances.get(binding.id)
+    this._instances.delete(binding.id)
   }
 
   configure(binding: Binding) {

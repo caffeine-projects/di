@@ -1,13 +1,13 @@
 import { performance } from 'perf_hooks'
 import { expect } from '@jest/globals'
-import { yellow, blue } from 'colorette'
+import { yellow, blue, green } from 'colorette'
 import { gray } from 'colorette'
 import { Root } from './_fixtures/di.js'
 import { di } from './_fixtures/di.js'
 import { RootSingleton } from './_fixtures/di.js'
-import { inv } from './_fixtures/inversify.js'
+import { InvRootSingleton as InvSingletonRoot, inv } from './_fixtures/inversify.js'
 import { InvRoot } from './_fixtures/inversify.js'
-import { tsy } from './_fixtures/tsy.js'
+import { TsySingletonRoot, tsy } from './_fixtures/tsy.js'
 import { TsyRoot } from './_fixtures/tsy.js'
 import { bootstrap } from './_fixtures/nest.js'
 import { NestRoot } from './_fixtures/nest.js'
@@ -19,7 +19,14 @@ const failIfLess = process.env.TEST_FAIL_PERF === 'true'
 const diff = (a: number, b: number) => '~' + String(Math.round(((a - b) / b) * 100)) + '%'
 
 describe('Performance Compare', function () {
-  function resolve(times: number, res: () => unknown) {
+  interface Results {
+    avg: number
+    max: number
+    min: number
+    items: Array<{ pos: number, total: number }>
+  }
+
+  function resolve(times: number, res: () => unknown): Results {
     const result = {
       avg: -1,
       max: -1,
@@ -87,62 +94,58 @@ describe('Performance Compare', function () {
     return result
   }
 
-  it('should resolve 15k times in less time then the others', async () => {
-    const times = 15000
+  const times = 15000
 
-    return bootstrap().then(async nestApp => {
-      expect(inv.get(InvRoot)).toBeInstanceOf(InvRoot)
-      expect(tsy.resolve(TsyRoot)).toBeInstanceOf(TsyRoot)
-      expect(loopCtx.getSync(LoopRoot.name)).toBeInstanceOf(LoopRoot)
-      expect(di.get(Root)).toBeInstanceOf(Root)
+  it(`should resolve ${times} times in less time then the others`, async () => {
+    const nestApp = await bootstrap()
 
-      const invRes = resolve(times, () => inv.get(InvRoot))
-      const tsyRes = resolve(times, () => tsy.resolve(TsyRoot))
-      const diRes = resolve(times, () => di.get(Root))
-      const diSingletonRes = resolve(times, () => di.get(RootSingleton))
-      const nestRes = resolve(times, () => nestApp.get(NestRoot))
-      const loopRes = resolve(times, () => loopCtx.getSync(LoopRoot.name))
+    expect(inv.get(InvRoot)).toBeInstanceOf(InvRoot)
+    expect(inv.get(InvSingletonRoot)).toBeInstanceOf(InvSingletonRoot)
+    expect(tsy.resolve(TsyRoot)).toBeInstanceOf(TsyRoot)
+    expect(tsy.resolve(TsySingletonRoot)).toBeInstanceOf(TsySingletonRoot)
+    expect(loopCtx.getSync(LoopRoot.name)).toBeInstanceOf(LoopRoot)
+    expect(di.get(Root)).toBeInstanceOf(Root)
 
-      const diAsync = await resolveAsync(times, () => di.getAsync(RootSingleton))
+    const invRes = resolve(times, () => inv.get(InvRoot))
+    const invSingletonRes = resolve(times, () => inv.get(InvSingletonRoot))
+    const tsyRes = resolve(times, () => tsy.resolve(TsyRoot))
+    const tsySingletonRes = resolve(times, () => tsy.resolve(TsySingletonRoot))
+    const diRes = resolve(times, () => di.get(Root))
+    const diSingletonRes = resolve(times, () => di.get(RootSingleton))
+    const nestRes = resolve(times, () => nestApp.get(NestRoot))
+    const loopRes = resolve(times, () => loopCtx.getSync(LoopRoot.name))
 
-      console.log('DI Avg: ' + gray(String(diRes.avg)))
-      console.log('DI Singleton Avg: ' + gray(String(diSingletonRes.avg)))
-      console.log('DI Async Avg: ' + gray(String(diAsync.avg)))
+    const diAsync = await resolveAsync(times, () => di.getAsync(RootSingleton))
 
-      console.log('Inversify Avg: ' + gray(String(invRes.avg)))
-      if (diRes.avg > invRes.avg) {
-        console.log(yellow(`PERF: Diff Inversify ${diff(diRes.avg, invRes.avg)}`))
+    console.log('DI Avg: ' + gray(String(diRes.avg)))
+    console.log('DI Singleton Avg: ' + gray(String(diSingletonRes.avg)))
+    console.log('DI Async Avg: ' + gray(String(diAsync.avg)))
+
+    function check(name: string, di: Results, compareTo: Results) {
+      const msg = `${name}: diff: ${diff(di.avg, compareTo.avg)}`
+
+      console.log(`${name}: avg: ${gray(String(compareTo.avg))}`)
+
+      if (di.avg > compareTo.avg) {
+        console.log(yellow(msg))
       } else {
-        console.log(blue(`PERF: Diff Inversify ${diff(invRes.avg, diRes.avg)}`))
+        console.log(green(msg))
       }
+    }
 
-      console.log('Tsyringe Avg: ' + gray(String(tsyRes.avg)))
-      if (diRes.avg > tsyRes.avg) {
-        console.log(yellow(`PERF: Diff Tsyringe ${diff(diRes.avg, tsyRes.avg)}`))
-      } else {
-        console.log(blue(`PERF: Diff Tsyringe ${diff(tsyRes.avg, diRes.avg)}`))
-      }
+    check('inversify', diRes, invRes)
+    check('inversify singleton', diSingletonRes, invSingletonRes)
+    check('tsyringe', diRes, tsyRes)
+    check('tsyringe singleton', diSingletonRes, tsySingletonRes)
+    check('loopback', diRes, loopRes)
+    check('nestjs', diSingletonRes, nestRes)
 
-      console.log('LoopBack Avg: ' + gray(String(loopRes.avg)))
-      console.log('LoopBack Avg: ' + gray(String(tsyRes.avg)))
-      if (diRes.avg > tsyRes.avg) {
-        console.log(yellow(`PERF: Diff LoopBack ${diff(diRes.avg, loopRes.avg)}`))
-      } else {
-        console.log(blue(`PERF: Diff LoopBack ${diff(loopRes.avg, diRes.avg)}`))
-      }
-
-      console.log('NestJs Avg: ' + gray(String(nestRes.avg)))
-      if (diSingletonRes.avg > nestRes.avg) {
-        console.log(yellow(`PERF: Diff NestJs ${diff(diSingletonRes.avg, nestRes.avg)}`))
-      } else {
-        console.log(blue(`PERF: Diff NestJs ${diff(nestRes.avg, diSingletonRes.avg)}`))
-      }
-
-      if (failIfLess) {
-        expect(diRes.avg).toBeLessThan(invRes.avg)
-        expect(diRes.avg).toBeLessThan(tsyRes.avg)
-        expect(diSingletonRes.avg).toBeLessThan(nestRes.avg)
-      }
-    })
+    if (failIfLess) {
+      expect(diRes.avg).toBeLessThan(invRes.avg)
+      expect(diSingletonRes.avg).toBeLessThan(invSingletonRes.avg)
+      expect(diRes.avg).toBeLessThan(tsyRes.avg)
+      expect(diSingletonRes.avg).toBeLessThan(tsySingletonRes.avg)
+      expect(diSingletonRes.avg).toBeLessThan(nestRes.avg)
+    }
   })
 })

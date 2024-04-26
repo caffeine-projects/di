@@ -1,3 +1,3 @@
-export const DiSymbols = {
+export const DISymbols = {
   kDeps: Symbol('injections'),
 }

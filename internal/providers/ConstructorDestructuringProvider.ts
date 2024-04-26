@@ -7,7 +7,7 @@ export class ConstructorDestructuringProvider<T> implements Provider<T> {
   constructor(private readonly clazz: Ctor<T>) {}
 
   provide(ctx: ResolutionContext): T {
-    const args = []
+    const args = new Array(ctx.binding.injections.length)
 
     for (let i = 0; i < ctx.binding.injections.length; i++) {
       const injection = ctx.binding.injections[i]
@@ -25,9 +25,9 @@ export class ConstructorDestructuringProvider<T> implements Provider<T> {
           )
         }
 
-        args.push(bag)
+        args[i] = bag
       } else {
-        args.push(Resolver.resolveParam(ctx.container, ctx.token, injection, i, ctx.args))
+        args[i] = Resolver.resolveParam(ctx.container, ctx.token, injection, i, ctx.args)
       }
     }
 

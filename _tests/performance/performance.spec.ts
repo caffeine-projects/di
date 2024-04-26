@@ -125,6 +125,16 @@ describe('Performance', () => {
       const res = bindTheTotalOf(5000)
       expect(res.register).toBeLessThan(1)
     })
+
+    it('should bind 50K times in less than 1 ms', () => {
+      const res = bindTheTotalOf(50000)
+      expect(res.register).toBeLessThan(1)
+    })
+
+    it('should bind 500K times in less than 1 ms', () => {
+      const res = bindTheTotalOf(50000)
+      expect(res.register).toBeLessThan(1)
+    })
   })
 
   describe('bindings + resolutions', function () {
@@ -152,6 +162,13 @@ describe('Performance', () => {
     it('should bind and resolve 10k times in less than 1 ms', () => {
       const di = bindTheTotalOf(10000).di
       const res = resolveTimes(di, 10000)
+
+      expect(res.avg).toBeLessThan(1)
+    })
+
+    it('should bind and resolve 500k times in less than 1 ms', () => {
+      const di = bindTheTotalOf(500000).di
+      const res = resolveTimes(di, 500000)
 
       expect(res.avg).toBeLessThan(1)
     })

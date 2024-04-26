@@ -14,10 +14,16 @@ export class InvRoot {
   constructor(readonly svc: InvSvc) {}
 }
 
+@injectable()
+export class InvRootSingleton {
+  constructor(readonly svc: InvSvc) {}
+}
+
 const inv = new Container()
 
 inv.bind(InvRep).toSelf()
 inv.bind(InvSvc).toSelf()
 inv.bind(InvRoot).toSelf()
+inv.bind(InvRootSingleton).toSelf().inSingletonScope()
 
 export { inv }

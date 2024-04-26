@@ -63,7 +63,7 @@ export class DI implements Container {
   protected readonly postProcessors = new Set<PostProcessor>()
   protected readonly filters: Filter[] = []
   protected readonly bindingRegistry = new BindingRegistry()
-  protected readonly bindingNames = new Map<Identifier, Binding[]>()
+  protected readonly namedBindings = new Map<Identifier, Binding[]>()
   protected readonly multipleBeansRefCache = new Map<Token, Binding[]>()
   protected readonly scopeId: Identifier
   protected readonly metadataReader: MetadataReader
@@ -302,10 +302,10 @@ export class DI implements Container {
     const bindings = this.getBindings<T>(token)
 
     if (bindings.length > 1) {
-      const primary = bindings.find(x => x.primary)
-
-      if (primary) {
-        return Resolver.resolve<T>(this, token, primary, args)
+      for (const binding of bindings) {
+        if (binding.primary) {
+          return Resolver.resolve<T>(this, token, binding, args)
+        }
       }
 
       throw new NoUniqueInjectionForTokenError(token)
@@ -330,14 +330,18 @@ export class DI implements Container {
     if (bindings.length === 0) {
       if (this.multipleBeansRefCache.has(token)) {
         const bindings = this.multipleBeansRefCache.get(token) as Binding[]
+        const resolved = new Array(bindings.length)
+        for (let i = 0; i < bindings.length; i++) {
+          resolved[i] = Resolver.resolve(this, token, bindings[i], args)
+        }
 
-        return bindings.map(binding => Resolver.resolve(this, token, binding, args))
+        return resolved
       }
 
       let entries = this.search(tk => tk !== token && token.isPrototypeOf(tk))
 
       if (entries.length === 0) {
-        entries = this.search((tk, binding) => binding.type === token)
+        entries = this.search((_tk, binding) => binding.type === token)
       }
 
       if (entries.length === 0) {
@@ -349,20 +353,30 @@ export class DI implements Container {
         )
       }
 
-      return entries.map(entry => Resolver.resolve(this, entry.token, entry.binding, args))
+      const resolved = new Array(entries.length)
+      for (let i = 0; i < entries.length; i++) {
+        resolved[i] = Resolver.resolve(this, token, entries[i].binding, args)
+      }
+
+      return resolved
     }
 
-    return bindings.map(binding => Resolver.resolve(this, token, binding, args))
+    const resolved = new Array(bindings.length)
+    for (let i = 0; i < bindings.length; i++) {
+      resolved[i] = Resolver.resolve(this, token, bindings[i], args)
+    }
+
+    return resolved
   }
 
   getAsync<T, A = unknown>(token: Token<T>, args?: A): Promise<T> {
     const bindings = this.getBindings<T>(token)
 
     if (bindings.length > 1) {
-      const primary = bindings.find(x => x.primary)
-
-      if (primary) {
-        return AsyncResolver.resolveAsync<T>(this, token, primary, args)
+      for (const binding of bindings) {
+        if (binding.primary) {
+          return AsyncResolver.resolveAsync<T>(this, token, binding, args)
+        }
       }
 
       throw new NoUniqueInjectionForTokenError(token)
@@ -472,8 +486,9 @@ export class DI implements Container {
   }
 
   getBindings<T>(token: Token<T>): Binding<T>[] {
-    if (this.has(token)) {
-      return [this.bindingRegistry.get(token) as Binding<T>]
+    const binding = this.bindingRegistry.get(token)
+    if (binding) {
+      return [binding]
     }
 
     if (this.parent) {
@@ -481,7 +496,7 @@ export class DI implements Container {
     }
 
     if (isNamedToken(token)) {
-      return this.bindingNames.get(token) || []
+      return this.namedBindings.get(token) || []
     }
 
     return []
@@ -657,7 +672,7 @@ export class DI implements Container {
   }
 
   qualifiers(): IterableIterator<[Identifier, Binding[]]> {
-    return this.bindingNames.entries()
+    return this.namedBindings.entries()
   }
 
   toString(): string {
@@ -674,14 +689,14 @@ export class DI implements Container {
 
   protected mapNamed(binding: Binding): void {
     for (const name of binding.names) {
-      const named = this.bindingNames.get(name)
+      const named = this.namedBindings.get(name)
 
       if (!named) {
-        this.bindingNames.set(name, [binding])
+        this.namedBindings.set(name, [binding])
       } else {
         if (!named.some(x => x.id === binding.id)) {
           named.push(binding)
-          this.bindingNames.set(name, named)
+          this.namedBindings.set(name, named)
         }
       }
     }
@@ -694,7 +709,7 @@ export class DI implements Container {
     this.multipleBeansRefCache.delete(token)
 
     if (isNamedToken(token)) {
-      this.bindingNames.delete(token)
+      this.namedBindings.delete(token)
     }
 
     for (const binding of bindings) {

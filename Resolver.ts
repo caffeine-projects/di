@@ -5,6 +5,7 @@ import { CircularReferenceError } from './internal/errors.js'
 import { solutions } from './internal/errors.js'
 import { newBinding } from './Binding.js'
 import { Binding } from './Binding.js'
+import { BindingEntry } from './internal/BindingRegistry.js'
 import { DeferredCtor } from './internal/DeferredCtor.js'
 import { TokenProvider } from './internal/providers/TokenProvider.js'
 import { tokenStr } from './Token.js'
@@ -32,9 +33,8 @@ export namespace Resolver {
     let resolved: T | undefined
 
     if (typeof token === 'function') {
-      const entries = container.search(
-        tk => typeof tk === 'function' && tk.name !== token.name && token.isPrototypeOf(tk),
-      )
+      const criteria = (tk: Token) => typeof tk === 'function' && tk.name !== token.name && token.isPrototypeOf(tk)
+      const entries = container.search(criteria)
 
       if (entries.length === 1) {
         const tk = entries[0].token
@@ -42,7 +42,8 @@ export namespace Resolver {
 
         container.configureBinding(token, newBinding({ rawProvider: new TokenProvider(tk) }))
       } else if (entries.length > 1) {
-        const primaries = entries.filter(x => x.binding.primary)
+        const isPrimary = (x: BindingEntry) => x.binding.primary
+        const primaries = entries.filter(isPrimary)
 
         if (primaries.length > 1) {
           throw new MultiplePrimaryError(
@@ -68,7 +69,12 @@ export namespace Resolver {
   }
 
   export function construct<T, A = unknown>(container: Container, ctor: Ctor<T>, binding: Binding, args?: A): T {
-    return new ctor(...binding.injections.map((dep, index) => resolveParam(container, ctor, dep, index, args)))
+    const params = new Array(binding.injections.length)
+    for (let i = 0; i < binding.injections.length; i++) {
+      params[i] = resolveParam(container, ctor, binding.injections[i], i, args)
+    }
+
+    return new ctor(...params)
   }
 
   export function resolveParam<T, A = unknown>(
@@ -90,13 +96,9 @@ export namespace Resolver {
       )
     }
 
-    let resolution: unknown
-
-    if (dep.multiple) {
-      resolution = container.getMany(dep.token, args)
-    } else {
-      resolution = container.get(dep.token, args)
-    }
+    const resolution: unknown = !dep.multiple
+      ? container.get(dep.token, args)
+      : container.getMany(dep.token, args)
 
     if (resolution !== undefined && resolution !== null) {
       return resolution as T
