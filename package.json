@@ -13,7 +13,7 @@
     "build": "rm -rf dist && tsc --build --force tsconfig.build.json",
     "test": "NODE_OPTIONS=--experimental-vm-modules npx jest --detectOpenHandles",
     "test:ci": "npx jest --detectOpenHandles --colors --coverage --ci",
-    "test:coverage": "npm test:ci -- --coverage",
+    "test:coverage": "npm test -- --coverage",
     "lint": "npx eslint",
     "lint:fix": "npx eslint --fix",
     "fmt": "npx prettier . --write",
