@@ -3,10 +3,10 @@ import { newBinding } from '../Binding.js'
 import { DI } from '../DI.js'
 import { CircularReferenceError } from '../internal/errors.js'
 import { TokenProvider } from '../internal/providers/TokenProvider.js'
-import { Bar } from './_fixtures/circular/Bar.js'
-import { BarFail } from './_fixtures/circular/BarFail.js'
-import { Foo } from './_fixtures/circular/Foo.js'
-import { FooFail } from './_fixtures/circular/FooFail.js'
+import { Bar } from './_testdata/circular/Bar.js'
+import { BarFail } from './_testdata/circular/BarFail.js'
+import { Foo } from './_testdata/circular/Foo.js'
+import { FooFail } from './_testdata/circular/FooFail.js'
 
 describe('Circular References', function () {
   describe('dependencies with deferred constructor', function () {

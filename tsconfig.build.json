@@ -6,6 +6,7 @@
     "**/__tests__/",
     "**/__fixtures__",
     "**/_tests/",
+    "**/_testdata/",
     "**/_performance/",
     "**/_bench/",
     "*.spec.ts",

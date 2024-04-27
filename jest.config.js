@@ -33,6 +33,7 @@ export default {
     '!**/__mocks__/**',
     '!**/__tests__/**',
     '!**/_fixtures/**',
+    '!**/_testdata/**',
     '!**/_tests/**',
     '!**/_performance/**',
     '!**/_bench/**',

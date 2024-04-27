@@ -15,8 +15,8 @@ import { Scoped } from '../decorators/Scoped.js'
 import { Defer } from '../decorators/Defer.js'
 import { Interceptor } from '../decorators/Interceptor.js'
 import { InvalidBindingError } from '../internal/errors.js'
-import { Foo } from './_fixtures/circular_beans/Foo.js'
-import { Bar } from './_fixtures/circular_beans/Bar.js'
+import { Foo } from './_testdata/circular_beans/Foo.js'
+import { Bar } from './_testdata/circular_beans/Bar.js'
 
 describe('Configuration', function () {
   describe('class provider', function () {
