@@ -1,9 +1,10 @@
 <h1 align="center">DI</hi>
 
 <p align="center">
-  <img src="docs/icon.png" alt="di-logo" width="120px" height="120px"/>
+  <img src="docs/icon.png" alt="di-logo" width="120px" height="120px" />
   <br />
-  <em>Dependency Injection Container for Javascript & Typescript</em>
+  <em>Dependency Injection Container for <br/>Javascript & Typescript</em>
+  <br />
 </p>
 
 <p align="center">
@@ -14,3 +15,5 @@
     <img src="https://codecov.io/gh/caffeine-projects/di/graph/badge.svg?token=IG0CTS843Q"/> 
   </a>
 </p>
+
+<hr />
