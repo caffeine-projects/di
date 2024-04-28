@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, Scope } from '@nestjs/common'
 import { Module } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 
@@ -15,8 +15,13 @@ export class NestRoot {
   constructor(readonly svc: NestSvc) {}
 }
 
+@Injectable({ scope: Scope.TRANSIENT })
+export class NestTransientRoot {
+  constructor(readonly svc: NestSvc) {}
+}
+
 @Module({
-  providers: [NestRep, NestSvc, NestRoot],
+  providers: [NestRep, NestSvc, NestRoot, NestTransientRoot],
 })
 export class App {}
 

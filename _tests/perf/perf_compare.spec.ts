@@ -9,9 +9,9 @@ import { InvRootSingleton as InvSingletonRoot, inv } from './_testdata/inversify
 import { InvRoot } from './_testdata/inversify.js'
 import { TsySingletonRoot, tsy } from './_testdata/tsy.js'
 import { TsyRoot } from './_testdata/tsy.js'
-import { bootstrap } from './_testdata/nest.js'
+import { NestTransientRoot, bootstrap } from './_testdata/nest.js'
 import { NestRoot } from './_testdata/nest.js'
-import { loopCtx } from './_testdata/loopback.js'
+import { LoopSingletonRoot, loopCtx } from './_testdata/loopback.js'
 import { LoopRoot } from './_testdata/loopback.js'
 
 const failIfLess = process.env.TEST_FAIL_PERF === 'true'
@@ -112,8 +112,10 @@ describe('Performance Compare', function () {
     const tsySingletonRes = resolve(times, () => tsy.resolve(TsySingletonRoot))
     const diRes = resolve(times, () => di.get(Root))
     const diSingletonRes = resolve(times, () => di.get(RootSingleton))
-    const nestRes = resolve(times, () => nestApp.get(NestRoot))
+    const nestSingletonRes = resolve(times, () => nestApp.get(NestRoot))
+    const nestRes = resolve(times, () => nestApp.resolve(NestTransientRoot))
     const loopRes = resolve(times, () => loopCtx.getSync(LoopRoot.name))
+    const loopSingletonRes = resolve(times, () => loopCtx.getSync(LoopSingletonRoot.name))
 
     const diAsync = await resolveAsync(times, () => di.getAsync(RootSingleton))
 
@@ -138,14 +140,22 @@ describe('Performance Compare', function () {
     check('tsyringe', diRes, tsyRes)
     check('tsyringe singleton', diSingletonRes, tsySingletonRes)
     check('loopback', diRes, loopRes)
-    check('nestjs', diSingletonRes, nestRes)
+    check('loopback singleton', diSingletonRes, loopSingletonRes)
+    check('nestjs', diRes, nestRes)
+    check('nestjs singleton', diSingletonRes, nestSingletonRes)
 
     if (failIfLess) {
       expect(diRes.avg).toBeLessThan(invRes.avg)
       expect(diSingletonRes.avg).toBeLessThan(invSingletonRes.avg)
+
+      expect(diRes.avg).toBeLessThan(loopRes.avg)
+      expect(diSingletonRes.avg).toBeLessThan(loopSingletonRes.avg)
+
       expect(diRes.avg).toBeLessThan(tsyRes.avg)
       expect(diSingletonRes.avg).toBeLessThan(tsySingletonRes.avg)
-      expect(diSingletonRes.avg).toBeLessThan(nestRes.avg)
+
+      expect(diRes.avg).toBeLessThan(nestRes.avg)
+      expect(diSingletonRes.avg).toBeLessThan(nestSingletonRes.avg)
     }
   })
 })

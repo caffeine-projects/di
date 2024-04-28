@@ -43,9 +43,9 @@ cronometro(
       loopCtx.getSync(LoopTransientRoot.name)
     },
 
-    nestjs() {
+    async nestjs() {
       nestApp.get(NestRoot)
-      return nestApp.resolve(NestTransientRoot)
+      await nestApp.resolve(NestTransientRoot)
     },
   },
   {
