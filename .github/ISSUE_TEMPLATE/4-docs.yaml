@@ -1,0 +1,23 @@
+name: Documentation
+description: Report issues/suggestions related to the documentation
+labels:
+  - 'documentation'
+
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Terms
+      description: 'By submitting this issue, I confirm that:'
+      options:
+        - label: I agree to follow Caffeine Projects DI [Code of Conduct](https://github.com/caffeine-projects/di/blob/main/CODE_OF_CONDUCT.md).
+          required: true
+        - label: I have checked for existing issues that describe my problem prior to opening this one.
+          required: true

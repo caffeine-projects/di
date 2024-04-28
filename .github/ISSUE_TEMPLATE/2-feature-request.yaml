@@ -1,0 +1,26 @@
+name: 'Feature Request'
+description: Feature Request for Caffeine Projects DI
+labels:
+  - 'enhancement'
+
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+    validations:
+      required: true
+
+  - type: textarea
+    id: feature-request
+    attributes:
+      label: Proposed Feature
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: true

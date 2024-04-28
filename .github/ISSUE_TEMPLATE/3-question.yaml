@@ -1,0 +1,33 @@
+name: Question
+description: Ask a question so we can help you easily.
+labels:
+  - 'question'
+
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: "Question Description"
+      description: "A clear and detailed description of the question."
+      placeholder: "Explain your question clearly, and in detail."
+    validations:
+      required: true
+
+  - type: textarea
+    id: snippet
+    attributes:
+      label: Code Snippet (optional)
+      render: typescript
+      value: |
+        console.log('hi')
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Terms
+      description: 'By submitting this issue, I confirm that:'
+      options:
+        - label: I agree to follow Caffeine Projects DI [Code of Conduct](https://github.com/caffeine-projects/di/blob/main/CODE_OF_CONDUCT.md).
+          required: true
+        - label: I have checked for existing issues that describe my question prior to opening this one.
+          required: true
