@@ -14,6 +14,9 @@
   <a href="https://codecov.io/gh/caffeine-projects/di" > 
     <img src="https://codecov.io/gh/caffeine-projects/di/graph/badge.svg?token=IG0CTS843Q"/> 
   </a>
+  <a href="https://github.com/prettier/prettier" > 
+    <img src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat"/> 
+  </a>
 </p>
 
 <hr />
