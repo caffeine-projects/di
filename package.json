@@ -11,9 +11,10 @@
   },
   "scripts": {
     "build": "rm -rf dist && tsc --build --force tsconfig.build.json",
-    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest --detectOpenHandles",
-    "test:ci": "npx jest --detectOpenHandles --colors --coverage --ci",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:ci": "jest --colors --coverage --ci",
     "test:coverage": "npm test -- --coverage",
+    "test:debug": "npm test -- --detectOpenHandles",
     "lint": "npx eslint",
     "lint:fix": "npx eslint --fix",
     "fmt": "npx prettier . --write",

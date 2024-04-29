@@ -25,7 +25,7 @@ export default {
   },
   coverageProvider: 'v8',
   coverageDirectory: './out',
-  coverageReporters: isCI ? ['json'] : ['json', 'text', 'text-summary'],
+  coverageReporters: isCI ? ['json', 'text-summary'] : ['json', 'text', 'text-summary', 'lcov'],
   collectCoverageFrom: [
     '**/*.ts',
     '!**/**/*.config.ts',
