@@ -12,6 +12,10 @@ describe('Refresh Scope', function () {
   @Scoped(Lifecycle.REFRESH)
   class Dep {
     readonly id: string = v4()
+
+    fn(): string {
+      return "test"
+    }
   }
 
   @Injectable()
@@ -20,11 +24,19 @@ describe('Refresh Scope', function () {
     readonly id: string = v4()
 
     constructor(readonly dep: Dep) {}
+
+    msg(): string {
+      return this.dep.fn() + " dev"
+    }
   }
 
   @Injectable()
   class Out {
     readonly id: string = v4()
+
+    hi(): string {
+      return "tchau"
+    }
   }
 
   describe('when request a scope refresh', function () {
@@ -36,7 +48,11 @@ describe('Refresh Scope', function () {
       const out = di.get(Out)
 
       expect(root).toEqual(di.get(Root))
+      expect(root.id).toEqual(di.get(Root).id)
+      expect(root.msg()).toEqual("test dev")
       expect(out).toEqual(di.get(Out))
+      expect(out.id).toEqual(di.get(Out).id)
+      expect(out.hi()).toEqual("tchau")
 
       await scope.refresh()
 
@@ -44,7 +60,11 @@ describe('Refresh Scope', function () {
       const outAfter = di.get(Out)
 
       expect(root).not.toEqual(rootAfter)
+      expect(root.id).not.toEqual(rootAfter.id)
+      expect(root.msg()).toEqual("test dev")
       expect(out).toEqual(outAfter)
+      expect(out.id).toEqual(outAfter.id)
+      expect(out.hi()).toEqual("tchau")
     })
   })
 })

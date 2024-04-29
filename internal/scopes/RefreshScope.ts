@@ -11,7 +11,9 @@ export class RefreshScope extends SingletonScope {
   }
 
   configure(binding: Binding) {
-    this._destructionCallbacks.set(binding.id, () => this.cachedInstance<any>(binding)?.[binding.preDestroy!]())
+    if (typeof binding.preDestroy !== 'undefined') {
+      this._destructionCallbacks.set(binding.id, () => this.cachedInstance<any>(binding)?.preDestroy())
+    }
   }
 
   undo(binding: Binding) {
