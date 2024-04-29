@@ -16,7 +16,11 @@ describe('Custom Binding Metadata', function () {
       return [Dep, kNm, { token: Opt, optional: true }]
     }
 
-    constructor(readonly dep: any, readonly nm: any, readonly opt?: any) {}
+    constructor(
+      readonly dep: any,
+      readonly nm: any,
+      readonly opt?: any,
+    ) {}
   }
 
   it('should ', function () {

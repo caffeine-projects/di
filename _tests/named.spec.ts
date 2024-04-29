@@ -43,7 +43,10 @@ describe('Named Dependencies', function () {
   class Root {
     readonly id: string = v4()
 
-    constructor(@Qualifier(kBye) readonly byeService: ByeService, @Qualifier(kAck) readonly ackService: AckService) {}
+    constructor(
+      @Qualifier(kBye) readonly byeService: ByeService,
+      @Qualifier(kAck) readonly ackService: AckService,
+    ) {}
   }
 
   it('should resolve based on dependency qualifier', function () {

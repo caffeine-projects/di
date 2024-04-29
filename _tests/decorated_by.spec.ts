@@ -27,7 +27,10 @@ describe('Decorators', function () {
 
     @Injectable()
     class DecoratedService implements IService {
-      constructor(@Decoratee() readonly decorated: IService, readonly dep: Dep) {}
+      constructor(
+        @Decoratee() readonly decorated: IService,
+        readonly dep: Dep,
+      ) {}
 
       save(): string {
         spy()
@@ -69,7 +72,10 @@ describe('Decorators', function () {
 
     @Injectable()
     class DecoratedService implements IService {
-      constructor(@Decoratee() readonly decorated: IService, readonly dep: Dep) {}
+      constructor(
+        @Decoratee() readonly decorated: IService,
+        readonly dep: Dep,
+      ) {}
 
       save(): string {
         spy()
@@ -114,7 +120,10 @@ describe('Decorators', function () {
 
     @Injectable(kDecorator)
     class Dec1 implements IService {
-      constructor(@Decoratee() readonly decorated: IService, readonly dep: Dep) {}
+      constructor(
+        @Decoratee() readonly decorated: IService,
+        readonly dep: Dep,
+      ) {}
 
       save(): string {
         spy()
@@ -125,7 +134,10 @@ describe('Decorators', function () {
     @Injectable(kDecorator)
     @Primary()
     class Dec2 implements IService {
-      constructor(@Decoratee() readonly decorated: IService, readonly dep: Dep) {}
+      constructor(
+        @Decoratee() readonly decorated: IService,
+        readonly dep: Dep,
+      ) {}
 
       save(): string {
         spy()
@@ -166,7 +178,10 @@ describe('Decorators', function () {
     @Injectable(kDecorator)
     @ConditionalOn(() => true)
     class Dec1 implements IService {
-      constructor(@Decoratee() readonly decorated: IService, readonly dep: Dep) {}
+      constructor(
+        @Decoratee() readonly decorated: IService,
+        readonly dep: Dep,
+      ) {}
 
       save(): string {
         spy()
@@ -177,7 +192,10 @@ describe('Decorators', function () {
     @Injectable(kDecorator)
     @ConditionalOn(() => false)
     class Dec2 implements IService {
-      constructor(@Decoratee() readonly decorated: IService, readonly dep: Dep) {}
+      constructor(
+        @Decoratee() readonly decorated: IService,
+        readonly dep: Dep,
+      ) {}
 
       save(): string {
         spy()
@@ -215,7 +233,10 @@ describe('Decorators', function () {
     class Dep {}
 
     class DecoratedService implements IService {
-      constructor(@Decoratee() readonly decorated: IService, readonly dep: Dep) {}
+      constructor(
+        @Decoratee() readonly decorated: IService,
+        readonly dep: Dep,
+      ) {}
 
       save(): string {
         return this.decorated.save()
@@ -249,7 +270,10 @@ describe('Decorators', function () {
 
     @Injectable(kDecorator)
     class Dec1 implements IService {
-      constructor(@Decoratee() readonly decorated: IService, readonly dep: Dep) {}
+      constructor(
+        @Decoratee() readonly decorated: IService,
+        readonly dep: Dep,
+      ) {}
 
       save(): string {
         return this.decorated.save()
@@ -258,7 +282,10 @@ describe('Decorators', function () {
 
     @Injectable(kDecorator)
     class Dec2 implements IService {
-      constructor(@Decoratee() readonly decorated: IService, readonly dep: Dep) {}
+      constructor(
+        @Decoratee() readonly decorated: IService,
+        readonly dep: Dep,
+      ) {}
 
       save(): string {
         return this.decorated.save()
@@ -319,7 +346,10 @@ describe('Decorators', function () {
 
       @Injectable()
       class Dec implements IService {
-        constructor(@Decoratee() readonly decorated: IService, @Decoratee() readonly another: IService) {}
+        constructor(
+          @Decoratee() readonly decorated: IService,
+          @Decoratee() readonly another: IService,
+        ) {}
 
         save(): string {
           return this.decorated.save()

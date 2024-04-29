@@ -42,7 +42,10 @@ describe('Class', function () {
     class Root {
       readonly id: string = v4()
 
-      constructor(readonly seeYaService: SeeYaService, readonly okService: OkService) {
+      constructor(
+        readonly seeYaService: SeeYaService,
+        readonly okService: OkService,
+      ) {
         spy()
       }
     }
@@ -265,14 +268,21 @@ describe('Class', function () {
       class Service {
         readonly id: string = v4()
 
-        constructor(readonly repo: Repo, readonly dep: Dep) {}
+        constructor(
+          readonly repo: Repo,
+          readonly dep: Dep,
+        ) {}
       }
 
       @Injectable()
       class Controller {
         readonly id: string = v4()
 
-        constructor(readonly dep: Dep, readonly service: Service, readonly repo: Repo) {}
+        constructor(
+          readonly dep: Dep,
+          readonly service: Service,
+          readonly repo: Repo,
+        ) {}
       }
 
       it('should resolve with same instance from previous resolutions', function () {

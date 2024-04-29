@@ -56,7 +56,10 @@ describe('Optional Injections', function () {
 
     @Injectable()
     class Test {
-      constructor(readonly reg: Reg, @Optional() readonly dep: Dep = new Dep('default value')) {}
+      constructor(
+        readonly reg: Reg,
+        @Optional() readonly dep: Dep = new Dep('default value'),
+      ) {}
     }
 
     it('should keep the optional value', function () {

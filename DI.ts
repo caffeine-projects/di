@@ -289,8 +289,8 @@ export class DI implements Container {
             binding.scopeId === Lifecycle.REFRESH
           )
         : binding.lazy === undefined
-        ? this.lazy
-        : binding.lazy
+          ? this.lazy
+          : binding.lazy
 
     this.bindingRegistry.register(token, binding)
     this.mapNamed(binding)

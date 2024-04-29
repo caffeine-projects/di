@@ -25,7 +25,10 @@ describe('DI', function () {
   @Injectable()
   @Named(kTestName)
   class NamedTest {
-    constructor(readonly dep: Dep, @Optional() readonly opt?: Opt) {}
+    constructor(
+      readonly dep: Dep,
+      @Optional() readonly opt?: Opt,
+    ) {}
   }
 
   it('should print the type name when calling toString()', function () {

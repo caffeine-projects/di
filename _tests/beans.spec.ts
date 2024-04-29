@@ -45,7 +45,10 @@ describe('Configuration', function () {
     }
 
     class Service {
-      constructor(readonly repo: Repo, readonly listener: Listener) {
+      constructor(
+        readonly repo: Repo,
+        readonly listener: Listener,
+      ) {
         spy()
       }
     }
