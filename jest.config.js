@@ -38,12 +38,6 @@ export default {
     '!**/_performance/**',
     '!**/_bench/**',
   ],
-  coveragePathIgnorePatterns: [
-    '/dist/',
-    '/node_modules/',
-    '<rootDit>/dist',
-    '<rootDir>/examples',
-    '<rootDir>/test',
-  ],
+  coveragePathIgnorePatterns: ['/dist/', '/node_modules/', '<rootDit>/dist', '<rootDir>/examples', '<rootDir>/test'],
   modulePathIgnorePatterns: ['dist', 'coverage', 'examples/*', 'benchmarks/*', 'scripts/*'],
 }

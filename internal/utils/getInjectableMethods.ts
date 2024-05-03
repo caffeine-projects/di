@@ -11,11 +11,12 @@ export function getInjectableMethods<TFunction extends Function>(
     return []
   }
 
-  const result = new Array<[Identifier, TokenSpec<unknown>[]]>()
-
-  for (const method of setterMethods) {
+  const result = new Array<[Identifier, TokenSpec<unknown>[]]>(setterMethods.length)
+  for (let i = 0; i < setterMethods.length; i++) {
+    const method = setterMethods[i]
     const tokens = Reflect.getOwnMetadata(Vars.CLASS_SETTER_METHODS_TOKENS, target, method)
-    result.push([method, tokens])
+
+    result[i] = [method, tokens]
   }
 
   return result

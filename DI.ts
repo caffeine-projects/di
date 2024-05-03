@@ -27,7 +27,6 @@ import { ScopedProvider } from './internal/ScopedProvider.js'
 import { SingletonScope } from './internal/scopes/SingletonScope.js'
 import { TokenProvider } from './internal/providers/TokenProvider.js'
 import { TransientScope } from './internal/scopes/TransientScope.js'
-import { Vars } from './internal/Vars.js'
 import { Lifecycle } from './Lifecycle.js'
 import { PostProcessor } from './PostProcessor.js'
 import { Resolver } from './Resolver.js'
@@ -610,9 +609,7 @@ export class DI implements Container {
         this.hooks.emit('onBindingRegistered', { token, binding })
       } else {
         if (binding.configuration) {
-          const tokens = Reflect.getOwnMetadata(Vars.CONFIGURATION_TOKENS_PROVIDED, token)
-
-          for (const tk of tokens) {
+          for (const tk of binding.tokensProvided) {
             TypeRegistrar.deleteBean(tk)
           }
         }

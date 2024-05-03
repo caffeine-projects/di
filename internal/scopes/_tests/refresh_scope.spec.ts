@@ -14,7 +14,7 @@ describe('Refresh Scope', function () {
     readonly id: string = v4()
 
     fn(): string {
-      return "test"
+      return 'test'
     }
   }
 
@@ -26,7 +26,7 @@ describe('Refresh Scope', function () {
     constructor(readonly dep: Dep) {}
 
     msg(): string {
-      return this.dep.fn() + " dev"
+      return this.dep.fn() + ' dev'
     }
   }
 
@@ -35,7 +35,7 @@ describe('Refresh Scope', function () {
     readonly id: string = v4()
 
     hi(): string {
-      return "tchau"
+      return 'tchau'
     }
   }
 
@@ -49,10 +49,10 @@ describe('Refresh Scope', function () {
 
       expect(root).toEqual(di.get(Root))
       expect(root.id).toEqual(di.get(Root).id)
-      expect(root.msg()).toEqual("test dev")
+      expect(root.msg()).toEqual('test dev')
       expect(out).toEqual(di.get(Out))
       expect(out.id).toEqual(di.get(Out).id)
-      expect(out.hi()).toEqual("tchau")
+      expect(out.hi()).toEqual('tchau')
 
       await scope.refresh()
 
@@ -61,10 +61,10 @@ describe('Refresh Scope', function () {
 
       expect(root).not.toEqual(rootAfter)
       expect(root.id).not.toEqual(rootAfter.id)
-      expect(root.msg()).toEqual("test dev")
+      expect(root.msg()).toEqual('test dev')
       expect(out).toEqual(outAfter)
       expect(out.id).toEqual(outAfter.id)
-      expect(out.hi()).toEqual("tchau")
+      expect(out.hi()).toEqual('tchau')
     })
   })
 })

@@ -1,6 +1,7 @@
 import { newId } from './internal/utils/newId.js'
 import { PostResolutionInterceptor } from './PostResolutionInterceptor.js'
 import { Provider } from './Provider.js'
+import { Token } from './Token.js'
 import { TokenSpec } from './Token.js'
 import { Conditional } from './decorators/ConditionalOn.js'
 import { Identifier } from './internal/types.js'
@@ -21,6 +22,7 @@ export interface Binding<T = any> {
   configuredBy?: string
   type?: Function
   configuration?: boolean
+  tokensProvided: Token[]
   primary?: boolean
   late?: boolean
   lazy?: boolean
@@ -49,6 +51,7 @@ export function newBinding<T>(initial: Partial<Binding<T>> = {}): Binding<T> {
     preDestroy: initial.preDestroy,
     postConstruct: initial.postConstruct,
     configuration: initial.configuration,
+    tokensProvided: initial.tokensProvided || [],
     type: initial.type,
     byPassPostProcessors: initial.byPassPostProcessors,
     scopeId: initial.scopeId!,

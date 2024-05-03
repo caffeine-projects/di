@@ -1,7 +1,8 @@
-import { Vars } from '../Vars.js'
 import { tokenStr } from '../../Token.js'
 import { ConfigurationProviderOptions } from '../../decorators/ConfigurationProviderOptions.js'
 import { RepeatedInjectableConfigurationError } from '../errors.js'
+import { TypeRegistrar } from '../TypeRegistrar.js'
+import { Identifier } from '../types.js'
 
 const Def: Partial<ConfigurationProviderOptions> = {
   dependencies: [],
@@ -15,10 +16,7 @@ export function configureBean(
   method: string | symbol,
   configurations: Partial<ConfigurationProviderOptions>,
 ): void {
-  const factories: Map<string | symbol, Partial<ConfigurationProviderOptions>> = Reflect.getOwnMetadata(
-    Vars.CONFIGURATION_PROVIDER,
-    target,
-  ) || new Map()
+  const factories = TypeRegistrar.getFactories(target) || new Map<Identifier, ConfigurationProviderOptions>()
   const actual = factories.get(method) || Def
   const interceptors = [...(actual.interceptors || []), ...(configurations.interceptors || [])]
   const newNames = configurations.names || []
@@ -39,11 +37,10 @@ export function configureBean(
     names: [...existingNames, ...newNames],
   })
 
-  Reflect.defineMetadata(Vars.CONFIGURATION_PROVIDER, factories, target)
+  TypeRegistrar.setFactories(target, factories)
 }
 
 export function getBeanConfiguration(target: Function, method: string | symbol): Partial<ConfigurationProviderOptions> {
-  const factories: Map<string | symbol, ConfigurationProviderOptions> =
-    Reflect.getOwnMetadata(Vars.CONFIGURATION_PROVIDER, target) || new Map()
+  const factories = TypeRegistrar.getFactories(target) || new Map<Identifier, Partial<ConfigurationProviderOptions>>()
   return factories.get(method) || Def
 }

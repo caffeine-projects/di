@@ -1,5 +1,4 @@
 import { newBinding } from '../Binding.js'
-import { Vars } from '../internal/Vars.js'
 import { BeanFactoryProvider } from '../internal/providers/BeanFactoryProvider.js'
 import { getParamTypes } from '../internal/utils/getParamTypes.js'
 import { isNil } from '../internal/utils/isNil.js'
@@ -22,18 +21,18 @@ export interface ConfigurationOptions {
 
 export function Configuration<T>(config: Partial<ConfigurationOptions> = {}): ClassDecorator {
   return function (target) {
+    const beanConfiguration =
+      (TypeRegistrar.getFactories(target) as Map<Identifier, ConfigurationProviderOptions>) ||
+      new Map<Identifier, ConfigurationProviderOptions>()
+    const configurations = Array.from(beanConfiguration.entries()).map(([_, options]) => options)
+    const tokens = configurations.map(x => x.token)
+
     TypeRegistrar.configure<T>(target, {
       injections: getParamTypes(target),
       namespace: config.namespace,
       configuration: true,
+      tokensProvided: tokens,
     })
-
-    const beanConfiguration: Map<string | symbol, ConfigurationProviderOptions> =
-      Reflect.getOwnMetadata(Vars.CONFIGURATION_PROVIDER, target) || new Map()
-    const configurations = Array.from(beanConfiguration.entries()).map(([_, options]) => options)
-    const tokens = configurations.map(x => x.token)
-
-    Reflect.defineMetadata(Vars.CONFIGURATION_TOKENS_PROVIDED, tokens, target)
 
     for (const [method, factory] of beanConfiguration) {
       if (factory.token === undefined) {

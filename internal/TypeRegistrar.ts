@@ -5,10 +5,13 @@ import { tokenStr } from '../Token.js'
 import { notNil } from './utils/notNil.js'
 import { RepeatedInjectableConfigurationError } from './errors.js'
 import { mergeObject } from './utils/mergeObject.js'
+import { Identifier } from './types.js'
+import { ConfigurationProviderOptions } from '../decorators/ConfigurationProviderOptions.js'
 
 export namespace TypeRegistrar {
   const _entries = new Map<Token, Binding>()
   const _beans: Array<[Token, Binding]> = []
+  const _factories = new Map<Function, Map<Identifier, Partial<ConfigurationProviderOptions>>>()
 
   export function configure<T>(token: Token<T>, additional: Partial<Binding>) {
     notNil(token)
@@ -68,6 +71,14 @@ export namespace TypeRegistrar {
 
   export function get<T>(ctor: Token<T>) {
     return _entries.get(notNil(ctor))
+  }
+
+  export function getFactories(type: Function): Map<Identifier, Partial<ConfigurationProviderOptions>> | undefined {
+    return _factories.get(type)
+  }
+
+  export function setFactories(type: Function, factories: Map<Identifier, Partial<ConfigurationProviderOptions>>) {
+    return _factories.set(type, factories)
   }
 
   export function entries(): IterableIterator<[Token, Binding]> {
