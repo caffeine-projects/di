@@ -7,7 +7,6 @@ import { getInjectableProperties } from '../internal/utils/getInjectableProperti
 import { getParamTypes } from '../internal/utils/getParamTypes.js'
 import { isNil } from '../internal/utils/isNil.js'
 import { configureBean } from '../internal/utils/beanUtils.js'
-import { getLookupProperties } from '../internal/utils/getLookupProperties.js'
 import { TypeRegistrar } from '../internal/TypeRegistrar.js'
 
 export function Injectable<T>(token?: Token) {
@@ -25,7 +24,6 @@ export function Injectable<T>(token?: Token) {
         injections: getParamTypes(target),
         injectableProperties: getInjectableProperties(target),
         injectableMethods: getInjectableMethods(target),
-        lookupProperties: getLookupProperties(target),
         type: target,
         names: token ? [token] : undefined,
       } as Partial<Binding>)

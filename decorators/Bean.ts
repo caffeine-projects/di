@@ -3,7 +3,6 @@ import { isNamedToken } from '../Token.js'
 import { getParamTypes } from '../internal/utils/getParamTypes.js'
 import { getInjectableProperties } from '../internal/utils/getInjectableProperties.js'
 import { getInjectableMethods } from '../internal/utils/getInjectableMethods.js'
-import { getLookupProperties } from '../internal/utils/getLookupProperties.js'
 import { Binding } from '../Binding.js'
 import { isNil } from '../internal/utils/isNil.js'
 import { configureBean } from '../internal/utils/beanUtils.js'
@@ -26,7 +25,6 @@ export function Bean<T>(bean: Token<T>, token?: Token) {
         injections: getParamTypes(target),
         injectableProperties: getInjectableProperties(target),
         injectableMethods: getInjectableMethods(target),
-        lookupProperties: getLookupProperties(target),
         type: target,
         names: bean ? [bean] : undefined,
       } as Partial<Binding>)

@@ -1,10 +1,9 @@
-import { Vars } from '../internal/Vars.js'
 import { Token } from '../Token.js'
-import { TokenSpec } from '../Token.js'
 import { isValidToken } from '../Token.js'
 import { notNil } from '../internal/utils/notNil.js'
 import { InvalidBindingError } from '../internal/errors.js'
 import { InvalidInjectionToken } from '../internal/errors.js'
+import { TypeRegistrar } from '../internal/TypeRegistrar.js'
 
 export interface LookupOptions {
   multiple?: boolean
@@ -24,14 +23,6 @@ export function Lookup(token?: Token, options?: LookupOptions): MethodDecorator 
 
     const type = Reflect.getMetadata('design:type', target, propertyKey)
     const injectionToken: Token = token ? token : type
-    const lookupProperties: Record<string | symbol, TokenSpec> =
-      Reflect.getOwnMetadata(Vars.CLASS_LOOKUP_PROPERTIES, target.constructor) || []
-
-    if (lookupProperties[propertyKey]) {
-      throw new InvalidBindingError(
-        `@Lookup() already added on property '${String(propertyKey)}' at class '${target.constructor.name}'.`,
-      )
-    }
 
     if (!isValidToken(injectionToken)) {
       throw new InvalidInjectionToken(
@@ -42,8 +33,16 @@ export function Lookup(token?: Token, options?: LookupOptions): MethodDecorator 
       )
     }
 
-    lookupProperties[propertyKey] = { ...options, token: injectionToken, tokenType: type }
+    const binding = TypeRegistrar.configure(target.constructor, { pre: false })
 
-    Reflect.defineMetadata(Vars.CLASS_LOOKUP_PROPERTIES, lookupProperties, target.constructor)
+    for (const [id, _] of binding.lookupProperties) {
+      if (id === propertyKey) {
+        throw new InvalidBindingError(
+          `@Lookup() already added on property '${String(propertyKey)}' at class '${target.constructor.name}'.`,
+        )
+      }
+    }
+
+    binding.lookupProperties.push([propertyKey, { ...options, token: injectionToken, tokenType: type }])
   }
 }

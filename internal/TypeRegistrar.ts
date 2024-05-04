@@ -13,7 +13,7 @@ export namespace TypeRegistrar {
   const _beans: Array<[Token, Binding]> = []
   const _factories = new Map<Function, Map<Identifier, Partial<ConfigurationProviderOptions>>>()
 
-  export function configure<T>(token: Token<T>, additional: Partial<Binding>) {
+  export function configure<T>(token: Token<T>, additional: Partial<Binding>): Binding<T> {
     notNil(token)
 
     const opts = { ...additional }
@@ -43,13 +43,18 @@ export namespace TypeRegistrar {
     }
 
     const info = newBinding({ ...existing, ...opts })
-    const entry = _entries.get(tk)
+    const cur = _entries.get(tk)
 
-    if (entry) {
-      _entries.set(tk, mergeObject(entry, info))
-    } else {
-      _entries.set(tk, newBinding(info))
+    if (cur) {
+      const binding = mergeObject<Binding<T>>(cur, info)
+      _entries.set(tk, binding)
+
+      return binding
     }
+
+    _entries.set(tk, info)
+
+    return info
   }
 
   export function addBean<T>(token: Token<T>, binding: Binding<T>) {
