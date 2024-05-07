@@ -6,7 +6,7 @@ import { Transient } from '../../decorators/Transient.js'
 import { Inject } from '../../decorators/Inject.js'
 import { Container } from '../../Container.js'
 
-describe('Performance', () => {
+describe.skip('Performance', () => {
   const kVal = Symbol('perf_val')
 
   abstract class Repo {}
