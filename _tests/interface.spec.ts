@@ -5,8 +5,8 @@ import { NoResolutionForTokenError } from '../internal/errors.js'
 import { Inject } from '../decorators/Inject.js'
 import { v4 } from 'uuid'
 
-describe('interfaces', function() {
-  describe('given an interface with multiple implementations and one of them using a named token', function() {
+describe('interfaces', function () {
+  describe('given an interface with multiple implementations and one of them using a named token', function () {
     const kRepo = Symbol('repo')
 
     interface Repository {
@@ -29,11 +29,10 @@ describe('interfaces', function() {
       }
     }
 
-    it('should fail when the dependency does not have the correct token', function() {
+    it('should fail when the dependency does not have the correct token', function () {
       @Injectable()
       class Service {
-        constructor(readonly repo: Repository) {
-        }
+        constructor(readonly repo: Repository) {}
 
         act(): string {
           return this.repo.save()
@@ -45,11 +44,10 @@ describe('interfaces', function() {
       expect(() => di.getRequired(Service)).toThrow(NoResolutionForTokenError)
     })
 
-    it('should resolve the dependency when it is correctly identified', function() {
+    it('should resolve the dependency when it is correctly identified', function () {
       @Injectable()
       class Service {
-        constructor(@Inject(kRepo) readonly repo: Repository) {
-        }
+        constructor(@Inject(kRepo) readonly repo: Repository) {}
 
         act(): string {
           return this.repo.save()
