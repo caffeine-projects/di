@@ -225,9 +225,9 @@ export class DI implements Container {
     }
 
     const scope = rawProvider instanceof TokenProvider ? DI.getScope(Lifecycle.TRANSIENT) : DI.getScope(scopeId)
-    const hasPropertyInjections = binding.injectableProperties.length > 0
-    const hasMethodInjections = binding.injectableMethods.length > 0
-    const hasLookups = binding.lookupProperties.length > 0
+    const hasPropertyInjections = binding.injectableProperties.size > 0
+    const hasMethodInjections = binding.injectableMethods.size > 0
+    const hasLookups = binding.lookupProperties.size > 0
     const chain: PostResolutionInterceptor<T>[] = []
 
     if (hasLookups && typeof token === 'function') {

@@ -22,3 +22,11 @@ ci-fix: ## run all ci commands but with fixes enabled
 	@npm test
 	@npm run lint:fix
 	@npm run fmt
+
+.PHONY: fmt
+fmt:
+	@npm run fmt
+
+.PHONY: lint
+lint:
+	@npm run lint:fix

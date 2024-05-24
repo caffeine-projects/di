@@ -4,11 +4,11 @@ import { Identifier } from '../types.js'
 
 export function getInjectableMethods<TFunction extends Function>(
   target: TFunction,
-): Array<[Identifier, TokenSpec<unknown>[]]> {
+): Map<Identifier, TokenSpec<unknown>[]> {
   const setterMethods: string[] = Reflect.getOwnMetadata(Vars.CLASS_SETTER_METHODS, target) || []
 
   if (setterMethods.length === 0) {
-    return []
+    return new Map()
   }
 
   const result = new Array<[Identifier, TokenSpec<unknown>[]]>(setterMethods.length)
@@ -19,5 +19,5 @@ export function getInjectableMethods<TFunction extends Function>(
     result[i] = [method, tokens]
   }
 
-  return result
+  return new Map(result)
 }

@@ -43,6 +43,6 @@ export function Lookup(token?: Token, options?: LookupOptions): MethodDecorator 
       }
     }
 
-    binding.lookupProperties.push([propertyKey, { ...options, token: injectionToken, tokenType: type }])
+    binding.lookupProperties.set(propertyKey, { ...options, token: injectionToken, tokenType: type })
   }
 }

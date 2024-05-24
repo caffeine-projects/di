@@ -9,9 +9,9 @@ import { Identifier } from './internal/types.js'
 export interface Binding<T = any> {
   id: number
   injections: TokenSpec<unknown>[]
-  injectableProperties: [Identifier, TokenSpec<unknown>][]
-  injectableMethods: [Identifier, TokenSpec<unknown>[]][]
-  lookupProperties: [Identifier, TokenSpec<unknown>][]
+  injectableProperties: Map<Identifier, TokenSpec<unknown>>
+  injectableMethods: Map<Identifier, TokenSpec<unknown>[]>
+  lookupProperties: Map<Identifier, TokenSpec<unknown>>
   interceptors: PostResolutionInterceptor[]
   namespace: Identifier
   scopeId: Identifier
@@ -37,9 +37,9 @@ export function newBinding<T>(initial: Partial<Binding<T>> = {}): Binding<T> {
   return {
     id: initial.id === undefined ? newId() : initial.id,
     injections: initial.injections || [],
-    injectableProperties: initial.injectableProperties || [],
-    injectableMethods: initial.injectableMethods || [],
-    lookupProperties: initial.lookupProperties || [],
+    injectableProperties: initial.injectableProperties || new Map(),
+    injectableMethods: initial.injectableMethods || new Map(),
+    lookupProperties: initial.lookupProperties || new Map(),
     interceptors: initial.interceptors || [],
     namespace: initial.namespace || '',
     names: initial.names || [],
