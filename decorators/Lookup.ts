@@ -33,7 +33,7 @@ export function Lookup(token?: Token, options?: LookupOptions): MethodDecorator 
       )
     }
 
-    const binding = TypeRegistrar.configure(target.constructor, { pre: false })
+    const binding = TypeRegistrar.configure(target.constructor, {})
 
     for (const [id, _] of binding.lookupProperties) {
       if (id === propertyKey) {
