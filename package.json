@@ -33,7 +33,7 @@
     "@loopback/context": "^7.0.4",
     "@nestjs/common": "^10.3.8",
     "@nestjs/core": "^10.4.1",
-    "@types/jest": "^29.5.12",
+    "@types/jest": "^29.5.13",
     "@types/node": "^22.5.2",
     "@types/supertest": "^6.0.2",
     "@types/uuid": "^10.0.0",
