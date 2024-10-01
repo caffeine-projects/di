@@ -13,10 +13,10 @@ export namespace TypeRegistrar {
   const _beans: Array<[Token, Binding]> = []
   const _factories = new Map<Function, Map<Identifier, Partial<ConfigurationProviderOptions>>>()
 
-  export function configure<T>(token: Token<T>, additional: Partial<Binding>): Binding<T> {
+  export function configure<T>(token: Token<T>, additional: Partial<Binding>, ready: boolean = true): Binding<T> {
     notNil(token)
 
-    const opts = { ...additional }
+    const opts = { ready, ...additional }
     const tk = typeof token === 'object' ? token.constructor : token
     const existing = TypeRegistrar.get(tk)
 
@@ -42,7 +42,7 @@ export namespace TypeRegistrar {
       opts.interceptors = [...existing.interceptors, ...(additional.interceptors || [])]
     }
 
-    const info = newBinding({ ...existing, ...opts })
+    const info = newBinding({ ...existing, ...opts, ready })
     const cur = _entries.get(tk)
 
     if (cur) {
@@ -55,6 +55,14 @@ export namespace TypeRegistrar {
     _entries.set(tk, info)
 
     return info
+  }
+
+  export function pre<T>(token: Token<T>, additional: Partial<Binding>): Binding<T> {
+    return configure(token, { ...additional }, false)
+  }
+
+  export function clearEntries() {
+    _entries.clear()
   }
 
   export function addBean<T>(token: Token<T>, binding: Binding<T>) {

@@ -681,7 +681,7 @@ export class DI implements Container {
   }
 
   protected isRegistrable(binding: Binding): boolean {
-    return binding.namespace === this.namespace && (binding.late == undefined || !binding.late)
+    return binding.ready && binding.namespace === this.namespace && (binding.late == undefined || !binding.late)
   }
 
   protected mapNamed(binding: Binding): void {

@@ -6,6 +6,8 @@ import { Configuration } from '../decorators/Configuration.js'
 import { Namespace } from '../decorators/Namespace.js'
 import { Bean } from '../decorators/Bean.js'
 import { Injectable } from '../decorators/Injectable.js'
+import { PreDestroy } from '../decorators/PreDestroy.js'
+import { Inject } from '../decorators/Inject.js'
 
 describe('Container Lifecycle Listener', function () {
   const spy = jest.fn()
@@ -13,6 +15,18 @@ describe('Container Lifecycle Listener', function () {
   // 1
   @Injectable()
   class Dep {}
+
+  // 1
+  class Incomplete {
+    @PreDestroy()
+    hi() {}
+  }
+
+  // 1
+  class IncompleteWithProp {
+    @Inject()
+    message!: string
+  }
 
   // 2
   @Injectable()
@@ -54,6 +68,6 @@ describe('Container Lifecycle Listener', function () {
 
     await di.dispose()
 
-    expect(spy).toHaveBeenCalledTimes(14)
+    expect(spy).toHaveBeenCalledTimes(16)
   })
 })

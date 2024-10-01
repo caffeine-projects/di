@@ -16,7 +16,6 @@ ci: ## run all ci commands
 	@npm run lint
 	@npm run fmt:check
 
-
 .PHONY: ci-fix
 ci-fix: ## run all ci commands but with fixes enabled
 	@npm test

@@ -143,4 +143,25 @@ describe('DI', function () {
 
     expect(di.size).toEqual(expected)
   })
+
+  // describe('when "fail on incomplete binding" is true', function() {
+  //   it('should fail setup when a binding is not injectable but contains method decorators', function () {
+  //     class NonManaged {
+  //       @PreDestroy()
+  //       hi() {
+  //       }
+  //     }
+
+  //     expect(() => DI.setup()).toThrow(IncompleteBindingError)
+  //   })
+
+  //   it('should fail setup when a binding is not injectable but contains property decorators', function () {
+  //     class NonManaged {
+  //       @Inject()
+  //       message!: string
+  //     }
+
+  //     expect(() => DI.setup()).toThrow(IncompleteBindingError)
+  //   })
+  // })
 })
