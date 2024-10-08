@@ -28,7 +28,7 @@
   ],
   "devDependencies": {
     "@commitlint/cli": "^19.3.0",
-    "@commitlint/config-conventional": "^19.2.2",
+    "@commitlint/config-conventional": "^19.5.0",
     "@jest/globals": "^29.7.0",
     "@loopback/context": "^7.0.4",
     "@nestjs/common": "^10.3.8",
