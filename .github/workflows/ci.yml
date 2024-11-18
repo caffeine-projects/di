@@ -84,7 +84,7 @@ jobs:
       - name: coverage
         if: matrix.os == 'ubuntu-latest' && matrix.node-version == '20'
         timeout-minutes: 5
-        uses: codecov/codecov-action@v4.6.0
+        uses: codecov/codecov-action@v5.0.2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
