@@ -1,15 +1,16 @@
-import { newBinding } from '../Binding.js'
-import { BeanFactoryProvider } from '../internal/providers/BeanFactoryProvider.js'
-import { getParamTypes } from '../internal/utils/getParamTypes.js'
-import { isNil } from '../internal/utils/isNil.js'
-import { TypeRegistrar } from '../internal/TypeRegistrar.js'
-import { Ctor } from '../internal/types.js'
-import { Identifier } from '../internal/types.js'
-import { InvalidBindingError } from '../internal/errors.js'
-import { solutions } from '../internal/errors.js'
-import { ConfigurationProviderOptions } from './ConfigurationProviderOptions.js'
-import { Bean } from './Bean.js'
-import { Injectable } from './Injectable.js'
+import { Injection } from '../Token'
+import { TokenDescriptor } from '../Token'
+import { Identifier } from '../internal/types'
+import { Ctor } from '../internal/types'
+import { getOrCreateBeanMetadata } from '../internal/utils/beanUtils'
+import { TypeRegistrar } from '../internal/TypeRegistrar'
+import { InvalidBindingError } from '../internal/errors'
+import { solutions } from '../internal/errors'
+import { Injectable } from './Injectable'
+import { newBinding } from '../Binding'
+import { isNil } from '../internal/utils/isNil'
+import { BeanFactoryProvider } from '../internal/providers/BeanFactoryProvider'
+import { Bean } from './Bean'
 
 export interface ConfigurationOptions {
   namespace: Identifier
@@ -19,16 +20,37 @@ export interface ConfigurationOptions {
   late: boolean
 }
 
-export function Configuration<T>(config: Partial<ConfigurationOptions> = {}): ClassDecorator {
-  return function (target) {
-    const beanConfiguration =
-      (TypeRegistrar.getFactories(target) as Map<Identifier, ConfigurationProviderOptions>) ||
-      new Map<Identifier, ConfigurationProviderOptions>()
+export function Configuration<T>(): <TFunction extends Function>(
+  target: TFunction,
+  context: ClassDecoratorContext,
+) => void
+export function Configuration<T>(
+  config: Partial<ConfigurationOptions>,
+): <TFunction extends Function>(target: TFunction, context: ClassDecoratorContext) => void
+export function Configuration<T>(
+  injections: Injection[],
+): <TFunction extends Function>(target: TFunction, context: ClassDecoratorContext) => void
+export function Configuration<T>(
+  config: Partial<ConfigurationOptions>,
+  injections: Injection[],
+): <TFunction extends Function>(target: TFunction, context: ClassDecoratorContext) => void
+export function Configuration<T>(
+  configOrInjections?: Partial<ConfigurationOptions> | Injection[],
+  dependencies: Injection[] = [],
+) {
+  return function <TFunction extends Function>(target: TFunction, context: ClassDecoratorContext) {
+    const config: Partial<ConfigurationOptions> = Array.isArray(configOrInjections) ? {} : (configOrInjections ?? {})
+    const deps = Array.isArray(configOrInjections) ? configOrInjections : dependencies
+    const injections: TokenDescriptor[] = deps.map(dep =>
+      typeof dep === 'object' ? (dep as TokenDescriptor) : { token: dep },
+    )
+    const metadata = getOrCreateBeanMetadata(context.metadata)
+    const beanConfiguration = metadata.methods
     const configurations = Array.from(beanConfiguration.entries()).map(([_, options]) => options)
     const tokens = configurations.map(x => x.token)
 
     TypeRegistrar.configure<T>(target, {
-      injections: getParamTypes(target),
+      injections: injections,
       namespace: config.namespace,
       configuration: true,
       tokensProvided: tokens,
@@ -60,7 +82,7 @@ export function Configuration<T>(config: Partial<ConfigurationOptions> = {}): Cl
         type: factory.type || (typeof factory.token === 'function' ? factory.token : undefined),
         rawProvider: new BeanFactoryProvider(target as unknown as Ctor<T>, method, factory),
         options: factory.options,
-        configuredBy: `${target.name}${String(method)}`,
+        configuredBy: `${target.name}/${String(method)}`,
         byPassPostProcessors: factory.byPassPostProcessors,
         interceptors: [...factory.interceptors],
       })

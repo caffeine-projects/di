@@ -4,7 +4,7 @@ import { Provider } from './Provider.js'
 import { Token } from './Token.js'
 import { isNamedToken } from './Token.js'
 import { tokenStr } from './Token.js'
-import { TokenSpec } from './Token.js'
+import { TokenDescriptor } from './Token.js'
 import { Binding } from './Binding.js'
 import { check } from './internal/utils/check.js'
 import { notNil } from './internal/utils/notNil.js'
@@ -31,7 +31,7 @@ export interface Binder<T> {
 
   toProvider(provider: Provider<T>): BinderOptions<T>
 
-  toFunction(fn: (...args: any[]) => unknown, injections: TokenSpec[]): BinderOptions<T>
+  toFunction(fn: (...args: any[]) => unknown, injections: TokenDescriptor[]): BinderOptions<T>
 }
 
 export class BindTo<T> implements Binder<T> {
@@ -108,7 +108,7 @@ export class BindTo<T> implements Binder<T> {
     return new BindToOptions<T>(this.container, this.token, this.binding)
   }
 
-  toFunction(fn: (...args: any[]) => unknown, injections: TokenSpec[]): BinderOptions<T> {
+  toFunction(fn: (...args: any[]) => unknown, injections: TokenDescriptor[]): BinderOptions<T> {
     check(typeof fn === 'function', `.toFunction() only accepts function types`)
 
     this.binding.rawProvider = new FunctionProvider(fn) as Provider<T>

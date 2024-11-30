@@ -10,7 +10,9 @@
     "**/_performance/",
     "**/_bench/",
     "*.spec.ts",
+    "*.test.ts",
     "*.spec.js",
+    "*.test.js",
     "*.config.ts"
   ]
 }

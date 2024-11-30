@@ -1,5 +1,5 @@
 import { Binding } from '../Binding.js'
-import { TokenSpec } from '../Token.js'
+import { TokenDescriptor } from '../Token.js'
 import { MetadataReader } from '../MetadataReader.js'
 import { Symbols } from '../Symbols.js'
 
@@ -11,14 +11,14 @@ export class BuiltInMetadataReader implements MetadataReader {
 
       if (kDeps) {
         const deps = token[kDeps]
-        const injections = new Array<TokenSpec>(deps.length)
+        const injections = new Array<TokenDescriptor>(deps.length)
 
         for (let i = 0; i < deps.length; i++) {
           const d = deps[i]
           if (typeof d === 'object') {
             injections[i] = d
           } else {
-            injections[i] = { token: d, tokenType: d }
+            injections[i] = { token: d }
           }
         }
 

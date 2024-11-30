@@ -2,7 +2,7 @@ import { Injectable } from '../../../decorators/Injectable.js'
 import { TypeOf } from '../../../TypeOf.js'
 import { FooFail } from './FooFail.js'
 
-@Injectable()
+@Injectable([FooFail])
 export class BarFail {
   constructor(readonly foo: TypeOf<FooFail>) {}
 

@@ -1,5 +1,5 @@
 import { Token } from '../Token.js'
-import { configureInjectionMetadata } from '../internal/utils/configureInjectionMetadata.js'
+import { configureInjectionMetadata } from './util/configureInjectionMetadata.js'
 import { notNil } from '../internal/utils/notNil.js'
 
 export function InjectAll(token: Token) {

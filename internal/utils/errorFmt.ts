@@ -1,5 +1,5 @@
 import { tokenStr } from '../../Token.js'
-import { TokenSpec } from '../../Token.js'
+import { TokenDescriptor } from '../../Token.js'
 import { Token } from '../../Token.js'
 import { isNil } from './isNil.js'
 
@@ -24,10 +24,6 @@ export function fmtParamError(ctor: Token, indexOrProp: number | (string | symbo
   return msg
 }
 
-export function fmtTokenError(spec: TokenSpec): string {
-  return `'${tokenStr(spec.token)}'${
-    !isNil(spec.tokenType) && spec.tokenType && spec.token !== spec.tokenType
-      ? ` of type '${tokenStr(spec.tokenType)}'`
-      : ''
-  }`
+export function fmtTokenError(spec: TokenDescriptor): string {
+  return `'${tokenStr(spec.token)}'`
 }

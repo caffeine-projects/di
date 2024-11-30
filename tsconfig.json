@@ -2,9 +2,12 @@
   "compilerOptions": {
     "outDir": "dist",
     "baseUrl": ".",
-
-    "module": "ESNext",
-    "target": "ESNext",
+    "module": "esnext",
+    "target": "esnext",
+    "lib": [
+      "Decorators",
+      "esnext.decorators"
+    ],
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
@@ -13,7 +16,6 @@
     "resolveJsonModule": true,
     "sourceMap": true,
     "declaration": true,
-
     "strictBindCallApply": true,
     "removeComments": true,
     "noImplicitAny": true,
@@ -25,8 +27,6 @@
     "noImplicitReturns": true,
     "strict": true,
     "noFallthroughCasesInSwitch": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
     "composite": true,
     "skipLibCheck": true,
     "noEmitHelpers": false
@@ -38,11 +38,5 @@
     ".yarn",
     "assets",
     "coverage"
-  ],
-
-  "ts-node": {
-    "experimentalSpecifierResolution": "node",
-    "transpileOnly": true,
-    "esm": true,
-  },
+  ]
 }

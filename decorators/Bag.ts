@@ -1,11 +1,6 @@
-import { configureInjectionMetadata } from '../internal/utils/configureInjectionMetadata.js'
 import { TokenBag } from '../Token.js'
 import { Token } from '../Token.js'
 import { check } from '../internal/utils/check.js'
-
-export function Bag(bag: TokenBag[]): ParameterDecorator {
-  return configureInjectionMetadata({ bag })
-}
 
 export interface BagItemType {
   key: string | symbol

@@ -1,5 +1,5 @@
 import { Token } from '../Token.js'
-import { TokenSpec } from '../Token.js'
+import { TokenDescriptor } from '../Token.js'
 import { Identifier } from '../internal/types.js'
 import { PostResolutionInterceptor } from '../PostResolutionInterceptor.js'
 import { Conditional } from './ConditionalOn.js'
@@ -7,7 +7,7 @@ import { Conditional } from './ConditionalOn.js'
 export interface ConfigurationProviderOptions {
   scopeId: Identifier
   token: Token
-  dependencies: TokenSpec[]
+  dependencies: TokenDescriptor[]
   conditionals: Conditional[]
   names: Identifier[]
   type: Function
