@@ -16,7 +16,8 @@
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "fmt": "prettier . --write",
-    "fmt:check": "prettier . --check"
+    "fmt:check": "prettier . --check",
+    "bench": "node --expose-gc --import=tsx _tests/perf/bench.test.ts"
   },
   "files": [
     "dist",
