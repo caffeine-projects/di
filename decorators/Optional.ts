@@ -1,4 +1,4 @@
-import { configureInjectionMetadata } from '../internal/utils/configureInjectionMetadata.js'
+import { configureInjectionMetadata } from './util/configureInjectionMetadata.js'
 import { Token } from '../Token.js'
 
 export function Optional(token?: Token<unknown>) {

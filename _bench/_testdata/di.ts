@@ -34,10 +34,10 @@ export class CafDep implements Caf {
   }
 }
 
-@Injectable()
+@Injectable(['caf'])
 @Transient()
 export class CafTransientRoot {
-  constructor(@Inject('caf') readonly dep: Caf) {}
+  constructor(readonly dep: Caf) {}
 }
 
 const di = DI.setup()

@@ -35,7 +35,7 @@ import { DefaultServiceLocator } from './ServiceLocator.js'
 import { ServiceLocator } from './ServiceLocator.js'
 import { tokenStr } from './Token.js'
 import { isNamedToken, Token } from './Token.js'
-import { TokenSpec } from './Token.js'
+import { TokenDescriptor } from './Token.js'
 import { isNil } from './internal/utils/isNil.js'
 import { loadModule } from './internal/utils/loadModule.js'
 import { notNil } from './internal/utils/notNil.js'
@@ -138,9 +138,9 @@ export class DI implements Container {
     await Promise.all(paths.map(path => loadModule(path)))
   }
 
-  static arg(token: Token, options?: Omit<TokenSpec, 'token'>): TokenSpec {
+  static arg(token: Token, options?: Omit<TokenDescriptor, 'token'>): TokenDescriptor {
     notNil(token)
-    return { token, tokenType: token, ...options }
+    return { token, ...options }
   }
 
   protected static async preDestroyBinding(binding: Binding): Promise<void> {

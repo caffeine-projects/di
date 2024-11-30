@@ -10,13 +10,12 @@ import { DeferredCtor } from './internal/DeferredCtor.js'
 import { TokenProvider } from './internal/providers/TokenProvider.js'
 import { tokenStr } from './Token.js'
 import { Token } from './Token.js'
-import { TokenSpec } from './Token.js'
+import { TokenDescriptor } from './Token.js'
 import { fmtTokenError } from './internal/utils/errorFmt.js'
 import { fmtParamError } from './internal/utils/errorFmt.js'
 import { Ctor } from './internal/types.js'
 import { Container } from './Container.js'
 import { Optional } from './decorators/Optional.js'
-import { Defer } from './decorators/Defer.js'
 import { Primary } from './decorators/Primary.js'
 import { InjectAll } from './decorators/InjectAll.js'
 
@@ -80,7 +79,7 @@ export namespace Resolver {
   export function resolveParam<T, A = unknown>(
     container: Container,
     target: Token<T>,
-    dep: TokenSpec<T>,
+    dep: TokenDescriptor<T>,
     indexOrProp: number | string | symbol,
     args?: A,
   ): T {
@@ -91,7 +90,7 @@ export namespace Resolver {
         )}' because the injection token is undefined.\n` +
           `This could mean that the component '${tokenStr(target)}' has a circular reference.` +
           solutions(
-            `- If this was intentional, make sure to decorate your circular dependency with @${Defer.name} and use the type 'TypeOf<>' to avoid TS errors during compilation.`,
+            `- If this was intentional, make sure to decorate your circular dependency with @Defer and use the type 'TypeOf<>' to avoid TS errors during compilation.`,
           ),
       )
     }

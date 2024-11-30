@@ -1,7 +1,4 @@
-import 'reflect-metadata'
-
 import { DI } from '../../DI.js'
-import { Inject } from '../../decorators/Inject.js'
 import { Injectable } from '../../decorators/Injectable.js'
 import { Transient } from '../../decorators/Transient.js'
 
@@ -26,9 +23,9 @@ class ByMessage implements Message {
   }
 }
 
-@Injectable()
+@Injectable([tkMsg])
 class Messenger {
-  constructor(@Inject(tkMsg) readonly message: Message) {}
+  constructor(readonly message: Message) {}
 
   act(): string {
     return this.message.act()

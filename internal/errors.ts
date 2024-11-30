@@ -78,6 +78,13 @@ export class InvalidBindingError extends DiError {
   }
 }
 
+export class ErrInvalidDecorator extends DiError {
+  constructor(message: string) {
+    super(message, 'ERR_INVALID_DECORATOR')
+    this.name = 'ErrInvalidDecorator'
+  }
+}
+
 export class MultiplePrimaryError extends DiError {
   constructor(message: string) {
     super(message, 'MULTIPLE_PRIMARY_SAME_COMPONENT')

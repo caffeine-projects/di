@@ -16,7 +16,6 @@ export function containerToString(container: Container): string {
               spec =>
                 '[' +
                 tokenStr(spec.token) +
-                (spec.tokenType ? ` : ${tokenStr(spec.tokenType)}` : '') +
                 `: optional=${spec.optional || false}, multiple=${spec.multiple || false}]`,
             )
             .join(', ')}], ` +

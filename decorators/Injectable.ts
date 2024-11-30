@@ -2,49 +2,45 @@ import { Binding } from '../Binding.js'
 import { InvalidBindingError } from '../internal/errors.js'
 import { isNamedToken } from '../Token.js'
 import { Token } from '../Token.js'
-import { getInjectableMethods } from '../internal/utils/getInjectableMethods.js'
-import { getInjectableProperties } from '../internal/utils/getInjectableProperties.js'
-import { getParamTypes } from '../internal/utils/getParamTypes.js'
-import { isNil } from '../internal/utils/isNil.js'
-import { configureBean } from '../internal/utils/beanUtils.js'
+import { Injection } from '../Token.js'
 import { TypeRegistrar } from '../internal/TypeRegistrar.js'
+import { getOrCreateBeanMetadata } from '../internal/utils/beanUtils'
 
-export function Injectable<T>(token?: Token) {
-  return function <TFunction extends Function>(target: TFunction | object, propertyKey?: string | symbol) {
-    if (typeof target === 'function') {
-      if (token !== undefined && !isNamedToken(token)) {
-        throw new InvalidBindingError(
-          `@Injectable or @Bean when used on class level only accepts injection named qualifiers of type string or symbol. ` +
-            `Received: ${typeof token}. ` +
-            `Check decorator on class '${target.name}'.`,
-        )
-      }
+export function Injectable<T>(tokenOrDependencies?: Token | Injection[], dependencies?: Injection[]) {
+  return function <TFunction extends Function>(
+    target: TFunction,
+    context: ClassDecoratorContext | ClassMethodDecoratorContext,
+  ) {
+    dependencies = dependencies || []
+    const expectedInjections = target.length
 
-      TypeRegistrar.configure<T>(target, {
-        injections: getParamTypes(target),
-        injectableProperties: getInjectableProperties(target),
-        injectableMethods: getInjectableMethods(target),
-        type: target,
-        names: token ? [token] : undefined,
-      } as Partial<Binding>)
+    let token =
+      tokenOrDependencies !== undefined && !Array.isArray(tokenOrDependencies) ? tokenOrDependencies : undefined
+    const deps =
+      tokenOrDependencies === undefined ? [] : Array.isArray(tokenOrDependencies) ? tokenOrDependencies : dependencies
 
-      return
-    }
-
-    if (isNil(token)) {
+    if (token !== undefined && !isNamedToken(token)) {
       throw new InvalidBindingError(
-        `@Injectable or @Bean when used on @Configuration classes method level, must receive a valid token. Current value is: ${String(
-          token,
-        )}. Check the decorators on method '${String(propertyKey)}' from class '${target.constructor.name}'`,
+        `@Injectable when it is used to decorate a class, it only accepts injection named qualifiers of type string or symbol. ` +
+          `Received: ${typeof token}. ` +
+          `Check decorator on class '${String(context.name)}'.`,
       )
     }
 
-    const type = typeof token === 'function' ? token : undefined
+    token = token ? token : target
 
-    configureBean(target.constructor, propertyKey!, {
-      dependencies: getParamTypes(target, propertyKey),
-      token,
-      type,
+    const metadata = getOrCreateBeanMetadata(context.metadata)
+    const injections = deps.map(dep => (typeof dep === 'object' ? dep : { token: dep }))
+
+    TypeRegistrar.configure<T>(target, {
+      injections: injections,
+      injectableProperties: metadata.injectableProperties,
+      injectableMethods: metadata.injectableMethods,
+      lookupProperties: metadata.lookupProperties,
+      type: target,
+      names: token ? [token] : undefined,
+      postConstruct: metadata.postConstruct,
+      preDestroy: metadata.preDestroy,
     } as Partial<Binding>)
   }
 }

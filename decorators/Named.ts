@@ -1,27 +1,18 @@
 import { configureBean } from '../internal/utils/beanUtils.js'
+import { getOrCreateBeanMetadata } from '../internal/utils/beanUtils.js'
 import { TypeRegistrar } from '../internal/TypeRegistrar.js'
-import { Ctor } from '../internal/types.js'
 import { Identifier } from '../internal/types.js'
-import { configureInjectionMetadata } from '../internal/utils/configureInjectionMetadata.js'
 
 export function Named<T>(name: Identifier) {
-  return function (
-    target: Ctor<T> | object,
-    propertyKey?: string | symbol,
-    parameterIndex?: number | PropertyDescriptor,
-  ) {
-    // Parameter
-    if (typeof parameterIndex === 'number') {
-      return configureInjectionMetadata({ token: name })(target, propertyKey!, parameterIndex)
-    }
+  return function <TFunction extends Function>(target: TFunction | object, context: DecoratorContext) {
+    switch (context.kind) {
+      case 'class':
+        TypeRegistrar.configure<T>(target as TFunction, { names: [name] })
+        break
 
-    // Class
-    if (typeof target === 'function') {
-      TypeRegistrar.configure<T>(target, { names: [name] })
-      return
+      case 'method':
+        configureBean(getOrCreateBeanMetadata(context.metadata), context.name, { names: [name] })
+        break
     }
-
-    // Method
-    configureBean(target.constructor, propertyKey!, { names: [name] })
   }
 }

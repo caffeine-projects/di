@@ -16,13 +16,7 @@ export class ConstructorDestructuringProvider<T> implements Provider<T> {
         const bag: Record<string | symbol, unknown> = {}
 
         for (const tokenBag of injection.bag) {
-          bag[tokenBag.key] = Resolver.resolveParam(
-            ctx.container,
-            ctx.token,
-            { ...tokenBag, tokenType: tokenBag.token },
-            i,
-            ctx.args,
-          )
+          bag[tokenBag.key] = Resolver.resolveParam(ctx.container, ctx.token, { ...tokenBag }, i, ctx.args)
         }
 
         args[i] = bag

@@ -2,16 +2,16 @@ import { newId } from './internal/utils/newId.js'
 import { PostResolutionInterceptor } from './PostResolutionInterceptor.js'
 import { Provider } from './Provider.js'
 import { Token } from './Token.js'
-import { TokenSpec } from './Token.js'
+import { TokenDescriptor } from './Token.js'
 import { Conditional } from './decorators/ConditionalOn.js'
 import { Identifier } from './internal/types.js'
 
 export interface Binding<T = any> {
   id: number
-  injections: TokenSpec<unknown>[]
-  injectableProperties: Map<Identifier, TokenSpec<unknown>>
-  injectableMethods: Map<Identifier, TokenSpec<unknown>[]>
-  lookupProperties: Map<Identifier, TokenSpec<unknown>>
+  injections: TokenDescriptor<unknown>[]
+  injectableProperties: Map<Identifier, TokenDescriptor<unknown>>
+  injectableMethods: Map<Identifier, TokenDescriptor<unknown>[]>
+  lookupProperties: Map<Identifier, TokenDescriptor<unknown>>
   interceptors: PostResolutionInterceptor[]
   namespace: Identifier
   scopeId: Identifier
