@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from 'expect'
-import { inject } from './injections.js'
+import { inject } from '../injections/injections'
 
 describe('inject()', function () {
   it('', function () {
