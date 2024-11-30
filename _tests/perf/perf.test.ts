@@ -8,7 +8,7 @@ import { Transient } from '../../decorators/Transient.js'
 import { Inject } from '../../decorators/Inject.js'
 import { Container } from '../../Container.js'
 
-describe.skip('Performance', () => {
+describe('Performance', () => {
   const kVal = Symbol('perf_val')
 
   abstract class Repo {}
@@ -34,7 +34,7 @@ describe.skip('Performance', () => {
     @PostConstruct()
     init() {}
 
-    @Inject(Dep)
+    @Inject([Dep])
     setDep(dep: Dep) {
       this.dep = dep
     }
@@ -76,7 +76,7 @@ describe.skip('Performance', () => {
       avg: -1,
       max: -1,
       min: Number.MAX_SAFE_INTEGER,
-      items: [] as { pos: number; total: number }[],
+      items: new Array<{ pos: number; total: number }>(times),
     }
 
     let i: number
@@ -98,7 +98,7 @@ describe.skip('Performance', () => {
         result.max = total
       }
 
-      result.items.push({ pos: i, total })
+      result.items[i] = { pos: i, total }
     }
 
     result.avg = result.items.reduce((p, c) => p + c.total, 0) / result.items.length
@@ -134,7 +134,7 @@ describe.skip('Performance', () => {
     })
 
     it('should bind 500K times in less than 1 ms', () => {
-      const res = bindTheTotalOf(50000)
+      const res = bindTheTotalOf(500000)
       expect(res.register).toBeLessThan(1)
     })
   })

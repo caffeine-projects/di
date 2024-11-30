@@ -6,13 +6,13 @@ import { Transient } from '../../../decorators/Transient.js'
 @Transient()
 class Rep {}
 
-@Injectable()
+@Injectable([Rep])
 @Transient()
 class Svc {
   constructor(readonly repo: Rep) {}
 }
 
-@Injectable()
+@Injectable([Svc])
 @Transient()
 export class Root {
   constructor(readonly svc: Svc) {}
@@ -21,12 +21,12 @@ export class Root {
 @Injectable()
 class RepSingleton {}
 
-@Injectable()
+@Injectable([RepSingleton])
 class SvcSingleton {
   constructor(readonly repo: RepSingleton) {}
 }
 
-@Injectable()
+@Injectable([SvcSingleton])
 export class RootSingleton {
   constructor(readonly svc: SvcSingleton) {}
 }
