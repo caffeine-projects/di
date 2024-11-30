@@ -58,7 +58,9 @@ import { AsyncResolver } from './AsyncResolver.js'
 
 export class DI implements Container {
   protected static readonly Scopes = new Map(DI.builtInScopes().entries())
-
+  readonly hooks: HookListener = new InternalHookListener()
+  readonly namespace: string | symbol
+  readonly parent?: DI
   protected readonly postProcessors = new Set<PostProcessor>()
   protected readonly filters: Filter[] = []
   protected readonly bindingRegistry = new BindingRegistry()
@@ -69,10 +71,6 @@ export class DI implements Container {
   protected readonly lazy?: boolean
   protected readonly lateBind?: boolean
   protected readonly overriding?: boolean
-
-  readonly hooks: HookListener = new InternalHookListener()
-  readonly namespace: string | symbol
-  readonly parent?: DI
 
   constructor(options: Partial<ContainerOptions> | string | symbol = '', parent?: DI) {
     const opts =
@@ -278,7 +276,10 @@ export class DI implements Container {
 
     binding.scopeId = scopeId
     binding.rawProvider = rawProvider
-    binding.scopedProvider = new ScopedProvider(scope, new EntrypointProvider(rawProvider, chain))
+    binding.scopedProvider =
+      chain.length == 0
+        ? new ScopedProvider(scope, rawProvider)
+        : new ScopedProvider(scope, new EntrypointProvider(rawProvider, chain))
     binding.late = binding.late === undefined ? this.lateBind : binding.late
     binding.lazy = binding.lazy =
       binding.lazy === undefined && this.lazy === undefined
@@ -352,17 +353,17 @@ export class DI implements Container {
         )
       }
 
-      const resolved = new Array(entries.length)
+      const resolved = new Array<T>(entries.length)
       for (let i = 0; i < entries.length; i++) {
-        resolved[i] = Resolver.resolve(this, token, entries[i].binding, args)
+        resolved[i] = Resolver.resolve<T>(this, token, entries[i].binding, args)
       }
 
       return resolved
     }
 
-    const resolved = new Array(bindings.length)
+    const resolved = new Array<T>(bindings.length)
     for (let i = 0; i < bindings.length; i++) {
-      resolved[i] = Resolver.resolve(this, token, bindings[i], args)
+      resolved[i] = Resolver.resolve<T>(this, token, bindings[i], args)
     }
 
     return resolved
