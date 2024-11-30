@@ -43,7 +43,7 @@
     "eslint-plugin-tsdoc": "^0.3.0",
     "expect": "^29.7.0",
     "fastify": "^5.1.0",
-    "inversify": "^6.1.1",
+    "inversify": "^6.1.5",
     "jest-mock": "^29.7.0",
     "lint-staged": "^15.2.10",
     "mitata": "^1.0.19",
