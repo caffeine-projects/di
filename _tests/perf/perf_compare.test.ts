@@ -122,8 +122,10 @@ describe('Performance Comparison', function () {
     const tsySingletonRes = resolve(iterations, () => tsy.resolve(TsySingletonRoot))
     const diRes = resolve(iterations, () => di.get(Root))
     const diSingletonRes = resolve(iterations, () => di.get(RootSingleton))
+    const nestRes = await resolveAsync(iterations, () => nestApp.resolve(NestTransientRoot))
     const nestSingletonRes = resolve(iterations, () => nestApp.get(NestRoot))
-    const nestRes = resolve(iterations, () => nestApp.resolve(NestTransientRoot))
+    const nestAsyncRes = await resolveAsync(iterations, () => nestApp.resolve(NestTransientRoot))
+    const nestAsyncSingletonRes = await resolveAsync(iterations, () => nestApp.resolve(NestRoot))
     const loopRes = resolve(iterations, () => loopCtx.getSync(LoopRoot.name))
     const loopSingletonRes = resolve(iterations, () => loopCtx.getSync(LoopSingletonRoot.name))
 
@@ -155,8 +157,10 @@ describe('Performance Comparison', function () {
     addResult('Tsyringe Singleton', resultsSingleton, diSingletonRes, tsySingletonRes)
     addResult('Loopback', results, diRes, loopRes)
     addResult('Loopback Singleton', resultsSingleton, diSingletonRes, loopSingletonRes)
-    addResult('Nestjs', resultsAsync, diAsync, nestRes)
-    addResult('Nestjs Singleton', resultsAsync, diAsyncSingleton, nestSingletonRes)
+    addResult('Nestjs', results, diRes, nestRes)
+    addResult('Nestjs Singleton', resultsSingleton, diSingletonRes, nestSingletonRes)
+    addResult('Nestjs Async', resultsAsync, diAsync, nestAsyncRes)
+    addResult('Nestjs Async Singleton', resultsAsync, diAsyncSingleton, nestAsyncSingletonRes)
 
     console.log(
       table(
@@ -189,7 +193,7 @@ describe('Performance Comparison', function () {
       expect(diRes.avg).toBeLessThan(tsyRes.avg)
       expect(diSingletonRes.avg).toBeLessThan(tsySingletonRes.avg)
 
-      expect(diRes.avg).toBeLessThan(nestRes.avg)
+      expect(diRes.avg).toBeLessThan(nestAsyncRes.avg)
       expect(diSingletonRes.avg).toBeLessThan(nestSingletonRes.avg)
     }
   })
