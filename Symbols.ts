@@ -1,3 +1,3 @@
 export const Symbols = {
-  kDeps: Symbol('injections'),
+  injections: Symbol('di_injections'),
 }

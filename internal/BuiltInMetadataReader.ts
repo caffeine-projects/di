@@ -7,7 +7,7 @@ export class BuiltInMetadataReader implements MetadataReader {
   read(token: any): Partial<Binding> {
     if (typeof token === 'function') {
       const symbols = Object.getOwnPropertySymbols(token)
-      const kDeps = symbols.find(x => x === Symbols.kDeps)
+      const kDeps = symbols.find(x => x === Symbols.injections)
 
       if (kDeps) {
         const deps = token[kDeps]

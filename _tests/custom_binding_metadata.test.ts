@@ -4,38 +4,40 @@ import { DI } from '../DI.js'
 import { Symbols } from '../Symbols.js'
 
 describe('Custom Binding Metadata', function () {
-  const kNm = Symbol('nm')
+  describe('when using a static factory method with Symbols.injections', function () {
+    const kNm = Symbol('nm')
 
-  class Dep {}
+    class Dep {}
 
-  class Opt {}
+    class Opt {}
 
-  class Nm {}
+    class Nm {}
 
-  class Root {
-    constructor(
-      readonly dep: any,
-      readonly nm: any,
-      readonly opt?: any,
-    ) {}
+    class Root {
+      constructor(
+        readonly dep: any,
+        readonly nm: any,
+        readonly opt?: any,
+      ) {}
 
-    static get [Symbols.kDeps]() {
-      return [Dep, kNm, { token: Opt, optional: true }]
+      static get [Symbols.injections]() {
+        return [Dep, kNm, { token: Opt, optional: true }]
+      }
     }
-  }
 
-  it('should ', function () {
-    const di = DI.setup()
+    it('should resolve dependencies based on the return of the Symbols.injections function', function () {
+      const di = DI.setup()
 
-    di.bind(Dep).toSelf()
-    di.bind(Nm).toSelf().qualifiers(kNm)
-    di.bind(Root).toSelf()
+      di.bind(Dep).toSelf()
+      di.bind(Nm).toSelf().qualifiers(kNm)
+      di.bind(Root).toSelf()
 
-    const root = di.get(Root)
+      const root = di.get(Root)
 
-    expect(root).toBeInstanceOf(Root)
-    expect(root.dep).toBeInstanceOf(Dep)
-    expect(root.nm).toBeInstanceOf(Nm)
-    expect(root.opt).toBeUndefined()
+      expect(root).toBeInstanceOf(Root)
+      expect(root.dep).toBeInstanceOf(Dep)
+      expect(root.nm).toBeInstanceOf(Nm)
+      expect(root.opt).toBeUndefined()
+    })
   })
 })
