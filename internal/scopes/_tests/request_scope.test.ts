@@ -9,7 +9,7 @@ import { Injectable } from '../../../decorators/Injectable.js'
 import { RequestScoped } from '../../../decorators/RequestScoped.js'
 import { DI } from '../../../DI.js'
 import { RequestScope } from '../RequestScope.js'
-import { TypeRegistrar } from '../../TypeRegistrar.js'
+import { typeRegistrar } from '../../TypeRegistrar.js'
 import { PostConstruct } from '../../../decorators/PostConstruct.js'
 import { PreDestroy } from '../../../decorators/PreDestroy.js'
 import { Lifecycle } from '../../../Lifecycle.js'
@@ -68,7 +68,7 @@ describe('Request Scope', function () {
   const server = Http.createServer(requestListener)
 
   after(async () => {
-    TypeRegistrar.remove(Ctrl)
+    typeRegistrar.remove(Ctrl)
     server.close()
 
     await di.dispose()

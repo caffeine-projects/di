@@ -3,7 +3,7 @@ import { expect } from 'expect'
 import { fn as Spy } from 'jest-mock'
 import { v4 } from 'uuid'
 import { Binding } from '../../../Binding.js'
-import { TypeRegistrar } from '../../TypeRegistrar.js'
+import { typeRegistrar } from '../../TypeRegistrar.js'
 import { Injectable } from '../../../decorators/Injectable.js'
 import { Scoped } from '../../../decorators/Scoped.js'
 import { DI } from '../../../DI.js'
@@ -41,7 +41,7 @@ describe('Scoping', function () {
 
   after(() => {
     DI.unbindScope(kCustomScopeId)
-    TypeRegistrar.remove(Dep)
+    typeRegistrar.remove(Dep)
   })
 
   it('should fail when using an non-registered scope', function () {
@@ -58,7 +58,7 @@ describe('Scoping', function () {
       return
     } finally {
       DI.unbindScope('none')
-      TypeRegistrar.remove(NonexistentScope)
+      typeRegistrar.remove(NonexistentScope)
     }
 
     fail('should not reach here!')

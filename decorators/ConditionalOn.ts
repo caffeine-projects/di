@@ -1,4 +1,4 @@
-import { TypeRegistrar } from '../internal/TypeRegistrar.js'
+import { typeRegistrar } from '../internal/TypeRegistrar.js'
 import { configureBean } from '../internal/utils/beanUtils.js'
 import { getOrCreateBeanMetadata } from '../internal/utils/beanUtils.js'
 import { Container } from '../Container.js'
@@ -21,13 +21,13 @@ export function ConditionalOn<T>(...conditionals: Conditional[]) {
 
     switch (context.kind) {
       case 'class':
-        const injectable = TypeRegistrar.get(target as TFunction)
+        const injectable = typeRegistrar.get(target as TFunction)
 
         if (injectable && injectable.conditionals) {
           merged.push(...injectable.conditionals)
         }
 
-        TypeRegistrar.configure<T>(target as TFunction, { conditionals: merged })
+        typeRegistrar.configure<T>(target as TFunction, { conditionals: merged })
 
         break
 

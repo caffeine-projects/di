@@ -3,7 +3,7 @@ import { ErrInvalidBinding } from '../internal/errors.js'
 import { isNamedKey } from '../Key'
 import { Key } from '../Key'
 import { Injection } from '../Key'
-import { TypeRegistrar } from '../internal/TypeRegistrar.js'
+import { typeRegistrar } from '../internal/TypeRegistrar.js'
 import { getOrCreateBeanMetadata } from '../internal/utils/beanUtils'
 
 export function Injectable<T>(keyOrDependencies?: Key | Injection[], dependencies?: Injection[]) {
@@ -30,7 +30,7 @@ export function Injectable<T>(keyOrDependencies?: Key | Injection[], dependencie
     const metadata = getOrCreateBeanMetadata(context.metadata)
     const injections = deps.map(dep => (typeof dep === 'object' ? dep : { key: dep }))
 
-    TypeRegistrar.configure<T>(target, {
+    typeRegistrar.configure<T>(target, {
       injections: injections,
       injectableProperties: metadata.injectableProperties,
       injectableMethods: metadata.injectableMethods,

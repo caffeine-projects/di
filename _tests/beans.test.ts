@@ -9,7 +9,7 @@ import { Primary } from '../decorators/Primary.js'
 import { DI } from '../DI'
 import { TypeOf } from '../TypeOf.js'
 import { Lifecycle } from '../Lifecycle.js'
-import { TypeRegistrar } from '../internal/TypeRegistrar.js'
+import { typeRegistrar } from '../internal/TypeRegistrar.js'
 import { Scoped } from '../decorators/Scoped.js'
 import { Interceptor } from '../decorators/Interceptor.js'
 import { ErrInvalidBinding } from '../internal/errors.js'
@@ -291,8 +291,8 @@ describe('Configuration', function () {
 
         expect(replaced.id).toEqual('replaced')
 
-        TypeRegistrar.remove(ToBeReplaced)
-        TypeRegistrar.remove(Conf)
+        typeRegistrar.remove(ToBeReplaced)
+        typeRegistrar.remove(Conf)
       }).not.toThrow()
     })
 
@@ -316,8 +316,8 @@ describe('Configuration', function () {
         try {
           DI.setup()
         } finally {
-          TypeRegistrar.remove(ToBeReplaced)
-          TypeRegistrar.remove(Conf)
+          typeRegistrar.remove(ToBeReplaced)
+          typeRegistrar.remove(Conf)
         }
       }).toThrow()
     })

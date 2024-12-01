@@ -1,6 +1,6 @@
 import { PostResolutionInterceptor } from '../PostResolutionInterceptor.js'
 import { ResolutionContext } from '../ResolutionContext.js'
-import { TypeRegistrar } from '../internal/TypeRegistrar.js'
+import { typeRegistrar } from '../internal/TypeRegistrar.js'
 import { configureBean } from '../internal/utils/beanUtils.js'
 import { getOrCreateBeanMetadata } from '../internal/utils/beanUtils.js'
 import { notNil } from '../internal/utils/notNil.js'
@@ -15,7 +15,7 @@ export function Interceptor<T>(
     )
 
     if (context.kind === 'class') {
-      TypeRegistrar.configure<T>(target as TFunction, { interceptors: [parsed] })
+      typeRegistrar.configure<T>(target as TFunction, { interceptors: [parsed] })
       return
     }
 

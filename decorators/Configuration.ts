@@ -3,7 +3,7 @@ import { KeyWithOptions } from '../Key'
 import { Identifier } from '../internal/types'
 import { Ctor } from '../internal/types'
 import { getOrCreateBeanMetadata } from '../internal/utils/beanUtils'
-import { TypeRegistrar } from '../internal/TypeRegistrar'
+import { typeRegistrar } from '../internal/TypeRegistrar'
 import { ErrInvalidBinding } from '../internal/errors'
 import { solutions } from '../internal/errors'
 import { Injectable } from './Injectable'
@@ -49,7 +49,7 @@ export function Configuration<T>(
     const configurations = Array.from(beanConfiguration.entries()).map(([_, options]) => options)
     const keys = configurations.map(x => x.key)
 
-    TypeRegistrar.configure<T>(target, {
+    typeRegistrar.configure<T>(target, {
       injections: injections,
       namespace: config.namespace,
       configuration: true,
@@ -87,7 +87,7 @@ export function Configuration<T>(
         interceptors: [...factory.interceptors],
       })
 
-      TypeRegistrar.addBean(factory.key, { ...binding })
+      typeRegistrar.addBean(factory.key, { ...binding })
     }
   }
 }

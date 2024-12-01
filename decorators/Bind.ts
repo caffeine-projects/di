@@ -3,7 +3,7 @@ import { check } from '../internal/utils/check.js'
 import { notNil } from '../internal/utils/notNil.js'
 import { configureBean } from '../internal/utils/beanUtils.js'
 import { getOrCreateBeanMetadata } from '../internal/utils/beanUtils.js'
-import { TypeRegistrar } from '../internal/TypeRegistrar.js'
+import { typeRegistrar } from '../internal/TypeRegistrar.js'
 import { Injection } from '../Key'
 import { KeyWithOptions } from '../Key'
 
@@ -22,7 +22,7 @@ export function Bind<T>(
       const injections =
         dependencies?.map(dep => (typeof dep === 'object' ? dep : ({ key: dep } as KeyWithOptions))) ?? []
 
-      TypeRegistrar.configure<T>(
+      typeRegistrar.configure<T>(
         target as TFunction,
         {
           injections: injections,

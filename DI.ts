@@ -3,7 +3,7 @@ import { BindTo } from './Binder.js'
 import { newBinding } from './Binding.js'
 import { Binding } from './Binding.js'
 import { BindingEntry, BindingRegistry } from './internal/BindingRegistry.js'
-import { TypeRegistrar } from './internal/TypeRegistrar.js'
+import { typeRegistrar } from './internal/TypeRegistrar.js'
 import { ErrRepeatedInjectableConfiguration } from './internal/errors.js'
 import { ErrScopeAlreadyRegistered } from './internal/errors.js'
 import { ErrCircularReference } from './internal/errors.js'
@@ -404,7 +404,7 @@ export class DI implements Container {
   bind<T>(key: Key<T>): Binder<T> {
     notNil(key)
 
-    const type = TypeRegistrar.get(key)
+    const type = typeRegistrar.get(key)
     const binding = newBinding(type)
 
     this.configureBinding(key, binding)
@@ -593,7 +593,7 @@ export class DI implements Container {
   }
 
   setup(): void {
-    for (const [key, binding] of TypeRegistrar.entries()) {
+    for (const [key, binding] of typeRegistrar.entries()) {
       this.hooks.emit('onSetup', { key: key, binding })
 
       if (!this.isRegistrable(binding) || !this.filter(key, binding)) {
@@ -609,7 +609,7 @@ export class DI implements Container {
       } else {
         if (binding.configuration) {
           for (const tk of binding.keysProvided) {
-            TypeRegistrar.deleteBean(tk)
+            typeRegistrar.deleteBean(tk)
           }
         }
 
@@ -617,7 +617,7 @@ export class DI implements Container {
       }
     }
 
-    for (const [key, binding] of TypeRegistrar.beans()) {
+    for (const [key, binding] of typeRegistrar.beans()) {
       this.hooks.emit('onSetup', { key: key, binding })
 
       if (!this.isRegistrable(binding) || !this.filter(key, binding)) {
@@ -658,7 +658,7 @@ export class DI implements Container {
   }
 
   types(): IterableIterator<[Key, Binding]> {
-    return TypeRegistrar.entries()
+    return typeRegistrar.entries()
   }
 
   entries(): IterableIterator<[Key, Binding]> {

@@ -6,7 +6,7 @@ import { configureBean } from '../internal/utils/beanUtils.js'
 import { getOrCreateBeanMetadata } from '../internal/utils/beanUtils.js'
 import { ConfigurationProviderOptions } from '../internal/utils/beanUtils.js'
 import { ErrInvalidBinding } from '../internal/errors.js'
-import { TypeRegistrar } from '../internal/TypeRegistrar.js'
+import { typeRegistrar } from '../internal/TypeRegistrar.js'
 import { KeyWithOptions } from '../Key'
 
 export function Bean(key: Key): <TFunction extends Function>(target: TFunction, context: DecoratorContext) => void
@@ -50,7 +50,7 @@ export function Bean(key: Key, nameOrDependencies?: Injection[] | Key) {
 
       const metadata = getOrCreateBeanMetadata(context.metadata)
 
-      TypeRegistrar.configure(t, {
+      typeRegistrar.configure(t, {
         injections: injections,
         injectableProperties: metadata.injectableProperties,
         injectableMethods: metadata.injectableMethods,
