@@ -19,8 +19,8 @@ import { Optional } from './decorators/Optional.js'
 import { Primary } from './decorators/Primary.js'
 import { InjectAll } from './decorators/InjectAll.js'
 
-export namespace Resolver {
-  export function resolve<T, A = unknown>(container: Container, key: Key<T>, binding?: Binding<T>, args?: A): T {
+export const Resolver = {
+  resolve<T, A = unknown>(container: Container, key: Key<T>, binding?: Binding<T>, args?: A): T {
     if (binding) {
       return binding.scopedProvider.provide({ container, key, binding, args }) as T
     }
@@ -65,18 +65,18 @@ export namespace Resolver {
     }
 
     return resolved as T
-  }
+  },
 
-  export function construct<T, A = unknown>(container: Container, ctor: Ctor<T>, binding: Binding, args?: A): T {
+  construct<T, A = unknown>(container: Container, ctor: Ctor<T>, binding: Binding, args?: A): T {
     const params = new Array(binding.injections.length)
     for (let i = 0; i < binding.injections.length; i++) {
-      params[i] = resolveParam(container, ctor, binding.injections[i], i, args)
+      params[i] = Resolver.resolveParam(container, ctor, binding.injections[i], i, args)
     }
 
     return new ctor(...params)
-  }
+  },
 
-  export function resolveParam<T, A = unknown>(
+  resolveParam<T, A = unknown>(
     container: Container,
     target: Key<T>,
     dep: KeyWithOptions<T>,
@@ -114,5 +114,5 @@ export namespace Resolver {
           `- If the dependency is optional, decorate it with @${Optional.name} or use the injection function "optional()".`,
         ),
     )
-  }
+  },
 }
