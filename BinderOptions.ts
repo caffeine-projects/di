@@ -2,7 +2,7 @@ import { Token } from './Token.js'
 import { Binding } from './Binding.js'
 import { notNil } from './internal/utils/notNil.js'
 import { Lifecycle } from './Lifecycle.js'
-import { InvalidBindingError } from './internal/errors.js'
+import { ErrInvalidBinding } from './internal/errors.js'
 import { Identifier } from './internal/types.js'
 import { Container } from './Container.js'
 import { DI } from './DI.js'
@@ -48,7 +48,7 @@ export class BindToOptions<T> implements BinderOptions<T> {
 
   as(scopeId: Identifier): BinderOptions<T> {
     if (!DI.hasScope(notNil(scopeId))) {
-      throw new InvalidBindingError(
+      throw new ErrInvalidBinding(
         `Scope '${String(
           scopeId,
         )}' is not registered! Register the scope using the method 'DI.bindScope()' before using it.`,

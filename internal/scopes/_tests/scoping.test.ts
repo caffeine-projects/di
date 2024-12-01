@@ -1,4 +1,4 @@
-import { describe, it, after } from 'node:test'
+import { after, describe, it } from 'node:test'
 import { expect } from 'expect'
 import { fn as Spy } from 'jest-mock'
 import { v4 } from 'uuid'
@@ -7,8 +7,8 @@ import { TypeRegistrar } from '../../TypeRegistrar.js'
 import { Injectable } from '../../../decorators/Injectable.js'
 import { Scoped } from '../../../decorators/Scoped.js'
 import { DI } from '../../../DI.js'
-import { ScopeAlreadyRegisteredError } from '../../errors.js'
-import { ScopeNotRegisteredError } from '../../errors.js'
+import { ErrScopeAlreadyRegistered } from '../../errors.js'
+import { ErrScopeNotRegistered } from '../../errors.js'
 import { Provider } from '../../../Provider.js'
 import { Lifecycle } from '../../../Lifecycle.js'
 import { Scope } from '../../../Scope.js'
@@ -52,8 +52,8 @@ describe('Scoping', function () {
     try {
       DI.setup()
     } catch (e) {
-      expect(e).toBeInstanceOf(ScopeNotRegisteredError)
-      expect(() => DI.getScope('none')).toThrow(ScopeNotRegisteredError)
+      expect(e).toBeInstanceOf(ErrScopeNotRegistered)
+      expect(DI.getScope('none')).toBeUndefined()
       expect(DI.hasScope('none')).toBeFalsy()
       return
     } finally {
@@ -98,6 +98,6 @@ describe('Scoping', function () {
           remove(binding: Binding): void {}
         })(),
       ),
-    ).toThrow(ScopeAlreadyRegisteredError)
+    ).toThrow(ErrScopeAlreadyRegistered)
   })
 })

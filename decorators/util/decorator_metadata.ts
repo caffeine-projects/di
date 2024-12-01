@@ -26,3 +26,5 @@ export function configureInjectionMetadata(
     }
   }
 }
+
+export function createClazzInjectable() {}

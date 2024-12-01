@@ -4,14 +4,14 @@ import { newBinding } from './Binding.js'
 import { Binding } from './Binding.js'
 import { BindingEntry, BindingRegistry } from './internal/BindingRegistry.js'
 import { TypeRegistrar } from './internal/TypeRegistrar.js'
-import { RepeatedInjectableConfigurationError } from './internal/errors.js'
-import { ScopeAlreadyRegisteredError } from './internal/errors.js'
-import { ScopeNotRegisteredError } from './internal/errors.js'
-import { CircularReferenceError } from './internal/errors.js'
-import { NoUniqueInjectionForTokenError } from './internal/errors.js'
-import { NoResolutionForTokenError } from './internal/errors.js'
-import { InvalidBindingError } from './internal/errors.js'
+import { ErrRepeatedInjectableConfiguration } from './internal/errors.js'
+import { ErrScopeAlreadyRegistered } from './internal/errors.js'
+import { ErrCircularReference } from './internal/errors.js'
+import { ErrNoUniqueInjectionForToken } from './internal/errors.js'
+import { ErrNoResolutionForToken } from './internal/errors.js'
+import { ErrInvalidBinding } from './internal/errors.js'
 import { solutions } from './internal/errors.js'
+import { ErrScopeNotRegistered } from './internal/errors.js'
 import { AfterInitInterceptor } from './internal/interceptors/AfterInitInterceptor.js'
 import { BeforeInitInterceptor } from './internal/interceptors/BeforeInitInterceptor.js'
 import { ContainerScope } from './internal/scopes/ContainerScope.js'
@@ -107,7 +107,7 @@ export class DI implements Container {
     notNil(scope)
 
     if (this.Scopes.has(scopeId)) {
-      throw new ScopeAlreadyRegisteredError(scopeId)
+      throw new ErrScopeAlreadyRegistered(scopeId)
     }
 
     DI.Scopes.set(scopeId, scope)
@@ -121,14 +121,8 @@ export class DI implements Container {
     return DI.Scopes.has(scopeId)
   }
 
-  static getScope<T extends Scope = Scope>(scopeId: Identifier): T {
-    const scope = DI.Scopes.get(scopeId)
-
-    if (scope === undefined) {
-      throw new ScopeNotRegisteredError(scopeId)
-    }
-
-    return scope as T
+  static getScope<T extends Scope = Scope>(scopeId: Identifier): T | undefined {
+    return DI.Scopes.get(scopeId) as T
   }
 
   static async scan(paths: string[]): Promise<void> {
@@ -180,7 +174,7 @@ export class DI implements Container {
 
     if (hasBag) {
       if (incoming.rawProvider && !(incoming.rawProvider instanceof ConstructorDestructuringProvider)) {
-        throw new InvalidBindingError(
+        throw new ErrInvalidBinding(
           `Binding '${tokenStr(token)}' contains constructor @Bag() parameters but is using a different provider. ` +
             solutions(
               `- Check if the component '${tokenStr(token)}' is using a custom provider and remove it. ` +
@@ -207,7 +201,7 @@ export class DI implements Container {
         const currentToken: Token = tokenProvider.provide(ctx)
 
         if (path.includes(currentToken)) {
-          throw new CircularReferenceError(`Token registration cycle detected! ${[...path, currentToken].join(' -> ')}`)
+          throw new ErrCircularReference(`Token registration cycle detected! ${[...path, currentToken].join(' -> ')}`)
         }
 
         path.push(currentToken)
@@ -223,6 +217,10 @@ export class DI implements Container {
     }
 
     const scope = rawProvider instanceof TokenProvider ? DI.getScope(Lifecycle.TRANSIENT) : DI.getScope(scopeId)
+    if (scope === undefined) {
+      throw new ErrScopeNotRegistered(scopeId)
+    }
+
     const hasPropertyInjections = binding.injectableProperties.size > 0
     const hasMethodInjections = binding.injectableMethods.size > 0
     const hasLookups = binding.lookupProperties.size > 0
@@ -271,7 +269,7 @@ export class DI implements Container {
     }
 
     if (binding.scopeId && binding.scopeId !== scopeId) {
-      DI.getScope(binding.scopeId).undo?.(binding)
+      DI.getScope(binding.scopeId)?.undo?.(binding)
     }
 
     binding.scopeId = scopeId
@@ -308,7 +306,7 @@ export class DI implements Container {
         }
       }
 
-      throw new NoUniqueInjectionForTokenError(token)
+      throw new ErrNoUniqueInjectionForToken(token)
     }
 
     return Resolver.resolve<T>(this, token, bindings[0], args)
@@ -318,7 +316,7 @@ export class DI implements Container {
     const result = this.get(token, args)
 
     if (isNil(result)) {
-      throw new NoResolutionForTokenError(`Unable to resolve required injection for token '${tokenStr(token)}'`)
+      throw new ErrNoResolutionForToken(`Unable to resolve required injection for token '${tokenStr(token)}'`)
     }
 
     return result
@@ -379,7 +377,7 @@ export class DI implements Container {
         }
       }
 
-      throw new NoUniqueInjectionForTokenError(token)
+      throw new ErrNoUniqueInjectionForToken(token)
     }
 
     return AsyncResolver.resolveAsync<T>(this, token, bindings[0], args)
@@ -520,7 +518,7 @@ export class DI implements Container {
 
   resetInstances(): void {
     for (const [, binding] of this.bindingRegistry.entries()) {
-      DI.getScope(binding.scopeId).remove(binding)
+      DI.getScope(binding.scopeId)?.remove(binding)
     }
   }
 
@@ -530,7 +528,7 @@ export class DI implements Container {
     const bindings = this.getBindings(token)
 
     for (const binding of bindings) {
-      DI.getScope(binding.scopeId).remove(binding)
+      DI.getScope(binding.scopeId)?.remove(binding)
     }
   }
 
@@ -544,7 +542,7 @@ export class DI implements Container {
         await DI.preDestroyBinding(binding).finally(() => this.unref(token))
       }
 
-      DI.getScope(binding.scopeId).remove(binding)
+      DI.getScope(binding.scopeId)?.remove(binding)
     }
   }
 
@@ -634,7 +632,7 @@ export class DI implements Container {
 
       if (pass) {
         if (this.has(token) && !this.overriding) {
-          throw new RepeatedInjectableConfigurationError(
+          throw new ErrRepeatedInjectableConfiguration(
             `Found multiple beans with the same injection token '${tokenStr(token)}' configured at '${
               binding.configuredBy
             }'`,
@@ -711,7 +709,7 @@ export class DI implements Container {
     }
 
     for (const binding of bindings) {
-      DI.getScope(binding.scopeId).remove(binding)
+      DI.getScope(binding.scopeId)?.remove(binding)
     }
   }
 

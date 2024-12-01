@@ -1,8 +1,8 @@
 import { Token } from '../Token.js'
 import { isValidToken } from '../Token.js'
 import { notNil } from '../internal/utils/notNil.js'
-import { InvalidBindingError } from '../internal/errors.js'
-import { InvalidInjectionToken } from '../internal/errors.js'
+import { ErrInvalidBinding } from '../internal/errors.js'
+import { ErrInvalidInjection } from '../internal/errors.js'
 import { getOrCreateBeanMetadata } from '../internal/utils/beanUtils'
 
 export interface LookupOptions {
@@ -22,7 +22,7 @@ export function Lookup(token: Token, options?: LookupOptions) {
     }
 
     if (!isValidToken(token)) {
-      throw new InvalidInjectionToken(
+      throw new ErrInvalidInjection(
         `@Lookup() decorator on property '${String(context.name)}' at class '${
           target.constructor.name
         }' doesn't contain a valid injection token. Value is typeof ${typeof token}. ` +
@@ -34,7 +34,7 @@ export function Lookup(token: Token, options?: LookupOptions) {
 
     for (const [id, _] of metadata.lookupProperties) {
       if (id === context.name) {
-        throw new InvalidBindingError(
+        throw new ErrInvalidBinding(
           `@Lookup() already added on property '${String(context.name)}' at class '${target.constructor.name}'.`,
         )
       }

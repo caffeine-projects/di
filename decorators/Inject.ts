@@ -1,7 +1,7 @@
-import { InvalidBindingError } from '../internal/errors.js'
+import { ErrInvalidBinding } from '../internal/errors.js'
 import { check } from '../internal/utils/check.js'
 import { Injection, Token, TokenDescriptor } from '../Token.js'
-import { configureInjectionMetadata } from './util/configureInjectionMetadata.js'
+import { configureInjectionMetadata } from './util/decorator_metadata'
 
 export function Inject(
   token: Token,
@@ -17,7 +17,7 @@ export function Inject(
       case 'method':
         check(
           Array.isArray(tokenOrDependencies),
-          new InvalidBindingError('when @Inject on method, dependencies must be an array'),
+          new ErrInvalidBinding('when @Inject on method, dependencies must be an array'),
         )
 
         const deps: Array<TokenDescriptor<unknown>> = (tokenOrDependencies as Array<Injection>).map(dep =>

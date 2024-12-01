@@ -3,15 +3,12 @@ import { Binding } from '../Binding.js'
 import { Token } from '../Token.js'
 import { tokenStr } from '../Token.js'
 import { notNil } from './utils/notNil.js'
-import { RepeatedInjectableConfigurationError } from './errors.js'
+import { ErrRepeatedInjectableConfiguration } from './errors.js'
 import { mergeObject } from './utils/mergeObject.js'
-import { Identifier } from './types.js'
-import { ConfigurationProviderOptions } from '../decorators/ConfigurationProviderOptions.js'
 
 export namespace TypeRegistrar {
   const _entries = new Map<Token, Binding>()
   const _beans: Array<[Token, Binding]> = []
-  const _factories = new Map<Function, Map<Identifier, Partial<ConfigurationProviderOptions>>>()
 
   export function configure<T>(token: Token<T>, additional: Partial<Binding>, ready: boolean = true): Binding<T> {
     notNil(token)
@@ -25,7 +22,7 @@ export namespace TypeRegistrar {
 
       if (opts?.names) {
         if (names.some(value => opts.names!.includes(value))) {
-          throw new RepeatedInjectableConfigurationError(
+          throw new ErrRepeatedInjectableConfiguration(
             `Found repeated qualifiers for the class '${tokenStr(token)}'. Qualifiers found: ${opts.names
               .map(x => tokenStr(x))
               .join(', ')}`,
@@ -84,14 +81,6 @@ export namespace TypeRegistrar {
 
   export function get<T>(ctor: Token<T>) {
     return _entries.get(notNil(ctor))
-  }
-
-  export function getFactories(type: Function): Map<Identifier, Partial<ConfigurationProviderOptions>> | undefined {
-    return _factories.get(type)
-  }
-
-  export function setFactories(type: Function, factories: Map<Identifier, Partial<ConfigurationProviderOptions>>) {
-    return _factories.set(type, factories)
   }
 
   export function entries(): IterableIterator<[Token, Binding]> {

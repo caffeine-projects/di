@@ -7,8 +7,8 @@ import { LateBind } from '../decorators/LateBind.js'
 import { Named } from '../decorators/Named.js'
 import { PreDestroy } from '../decorators/PreDestroy.js'
 import { DI } from '../DI.js'
-import { MultiplePrimaryError } from '../internal/errors.js'
-import { InvalidBindingError } from '../internal/errors.js'
+import { ErrMultiplePrimary } from '../internal/errors.js'
+import { ErrInvalidBinding } from '../internal/errors.js'
 import { Provider } from '../Provider.js'
 import { Lifecycle } from '../Lifecycle.js'
 import { ResolutionContext } from '../ResolutionContext.js'
@@ -369,12 +369,12 @@ describe('Manual Binding', function () {
   describe('invalid bindings scenarios', function () {
     it('should only accept self binding with class types', function () {
       const di = DI.setup()
-      expect(() => di.bind('test').toSelf()).toThrow(InvalidBindingError)
+      expect(() => di.bind('test').toSelf()).toThrow(ErrInvalidBinding)
     })
 
     it('should only accept previously registered scopes', function () {
       const di = DI.setup()
-      expect(() => di.bind('test').toValue('value').as('nonexistent-scope')).toThrow(InvalidBindingError)
+      expect(() => di.bind('test').toValue('value').as('nonexistent-scope')).toThrow(ErrInvalidBinding)
     })
   })
 
@@ -402,7 +402,7 @@ describe('Manual Binding', function () {
       di.bind(Impl1).toSelf().primary(true)
       di.bind(Impl2).toSelf().primary(true)
 
-      expect(() => di.get(Base)).toThrow(MultiplePrimaryError)
+      expect(() => di.get(Base)).toThrow(ErrMultiplePrimary)
     })
   })
 

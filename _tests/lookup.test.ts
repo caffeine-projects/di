@@ -5,8 +5,8 @@ import { Lifecycle } from '../Lifecycle.js'
 import { Lookup } from '../decorators/Lookup.js'
 import { noop } from '../noop.js'
 import { DI } from '../DI.js'
-import { InvalidBindingError } from '../internal/errors.js'
-import { InvalidInjectionToken } from '../internal/errors.js'
+import { ErrInvalidBinding } from '../internal/errors.js'
+import { ErrInvalidInjection } from '../internal/errors.js'
 import { Injectable } from '../decorators/Injectable.js'
 import { Scoped } from '../decorators/Scoped.js'
 
@@ -84,7 +84,7 @@ describe('Lookup', function () {
               return null
             }
           }
-        }).toThrow(InvalidBindingError)
+        }).toThrow(ErrInvalidBinding)
       })
 
       it('should fail when no injection is defined', function () {
@@ -96,7 +96,7 @@ describe('Lookup', function () {
               return undefined
             }
           }
-        }).toThrow(InvalidInjectionToken)
+        }).toThrow(ErrInvalidInjection)
       })
     })
   })

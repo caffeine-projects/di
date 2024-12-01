@@ -4,7 +4,7 @@ import { Identifier } from '../internal/types'
 import { Ctor } from '../internal/types'
 import { getOrCreateBeanMetadata } from '../internal/utils/beanUtils'
 import { TypeRegistrar } from '../internal/TypeRegistrar'
-import { InvalidBindingError } from '../internal/errors'
+import { ErrInvalidBinding } from '../internal/errors'
 import { solutions } from '../internal/errors'
 import { Injectable } from './Injectable'
 import { newBinding } from '../Binding'
@@ -58,7 +58,7 @@ export function Configuration<T>(
 
     for (const [method, factory] of beanConfiguration) {
       if (factory.token === undefined) {
-        throw new InvalidBindingError(
+        throw new ErrInvalidBinding(
           `No injection token defined for bean configured on method '${String(method)}' at the configuration class '${
             target.name
           }'.` +

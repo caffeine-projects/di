@@ -1,5 +1,5 @@
 import { Binding } from '../Binding.js'
-import { InvalidBindingError } from '../internal/errors.js'
+import { ErrInvalidBinding } from '../internal/errors.js'
 import { isNamedToken } from '../Token.js'
 import { Token } from '../Token.js'
 import { Injection } from '../Token.js'
@@ -19,7 +19,7 @@ export function Injectable<T>(tokenOrDependencies?: Token | Injection[], depende
       tokenOrDependencies === undefined ? [] : Array.isArray(tokenOrDependencies) ? tokenOrDependencies : dependencies
 
     if (token !== undefined && !isNamedToken(token)) {
-      throw new InvalidBindingError(
+      throw new ErrInvalidBinding(
         `@Injectable when it is used to decorate a class, it only accepts injection named qualifiers of type string or symbol. ` +
           `Received: ${typeof token}. ` +
           `Check decorator on class '${String(context.name)}'.`,

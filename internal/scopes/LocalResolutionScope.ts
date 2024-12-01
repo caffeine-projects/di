@@ -4,7 +4,7 @@ import { Provider } from '../../Provider.js'
 import { tokenStr } from '../../Token.js'
 import { LocalResolutions } from '../../LocalResolutions.js'
 import { ResolutionContext } from '../../ResolutionContext.js'
-import { MissingRequiredProviderArgumentError } from '../errors.js'
+import { ErrMissingRequiredProviderArgument } from '../errors.js'
 
 export class LocalResolutionScope implements Scope {
   get<T>(ctx: ResolutionContext, unscoped: Provider<T>): T {
@@ -13,7 +13,7 @@ export class LocalResolutionScope implements Scope {
     }
 
     if (!(ctx.args instanceof LocalResolutions)) {
-      throw new MissingRequiredProviderArgumentError(
+      throw new ErrMissingRequiredProviderArgument(
         `Local Resolution Scope: Failed to provide a component for token '${tokenStr(
           ctx.token,
         )}' inside local resolution scope. \n` +

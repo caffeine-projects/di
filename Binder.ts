@@ -8,7 +8,7 @@ import { TokenDescriptor } from './Token.js'
 import { Binding } from './Binding.js'
 import { check } from './internal/utils/check.js'
 import { notNil } from './internal/utils/notNil.js'
-import { InvalidBindingError } from './internal/errors.js'
+import { ErrInvalidBinding } from './internal/errors.js'
 import { ResolutionContext } from './ResolutionContext.js'
 import { ClassProvider } from './internal/providers/ClassProvider.js'
 import { ValueProvider } from './internal/providers/ValueProvider.js'
@@ -55,7 +55,7 @@ export class BindTo<T> implements Binder<T> {
 
   toSelf(): BindToOptions<T> {
     if (isNamedToken(this.token)) {
-      throw new InvalidBindingError(
+      throw new ErrInvalidBinding(
         '.toSelf() cannot be used when binding key is not a class type. ' +
           `Current token is: '${tokenStr(this.token)}' of type '${typeof this.token}'`,
       )

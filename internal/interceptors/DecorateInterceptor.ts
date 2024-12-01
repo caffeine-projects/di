@@ -5,10 +5,10 @@ import { Ctor } from '../types.js'
 import { Token } from '../../Token.js'
 import { tokenStr } from '../../Token.js'
 import { isNamedToken } from '../../Token.js'
-import { NoUniqueInjectionForTokenError } from '../errors.js'
-import { NoResolutionForTokenError } from '../errors.js'
+import { ErrNoUniqueInjectionForToken } from '../errors.js'
+import { ErrNoResolutionForToken } from '../errors.js'
 import { solutions } from '../errors.js'
-import { InvalidBindingError } from '../errors.js'
+import { ErrInvalidBinding } from '../errors.js'
 import { Injectable } from '../../decorators/Injectable.js'
 import { Bean } from '../../decorators/Bean.js'
 
@@ -20,7 +20,7 @@ export class DecorateInterceptor<T> implements PostResolutionInterceptor<T> {
     const decoratees = binding.injections.filter(x => x.decorated)
 
     if (decoratees.length === 0) {
-      throw new InvalidBindingError(
+      throw new ErrInvalidBinding(
         `Decorator '${tokenStr(this.decorator)}' for '${tokenStr(
           ctx.token,
         )}' must have 1 constructor parameter decorated with '@Decoratee()'`,
@@ -28,7 +28,7 @@ export class DecorateInterceptor<T> implements PostResolutionInterceptor<T> {
     }
 
     if (decoratees.length > 1) {
-      throw new InvalidBindingError(
+      throw new ErrInvalidBinding(
         `Decorator '${tokenStr(this.decorator)}' for '${tokenStr(ctx.token)}' contains '${
           decoratees.length
         }' parameters decorated with '@Decoratee()'. It must have only 1 constructor parameter as the decoratee. ` +
@@ -56,7 +56,7 @@ export class DecorateInterceptor<T> implements PostResolutionInterceptor<T> {
       if (typeof binding.type === 'function') {
         return new (binding.type as Ctor)(...args)
       } else {
-        throw new NoResolutionForTokenError(
+        throw new ErrNoResolutionForToken(
           `Unable to resolve decorator '${tokenStr(this.decorator)}' for class '${tokenStr(
             ctx.token,
           )}'. Reason: Couldn't find a valid decorator class to construct. Decorator token is named and the binding type is: '${
@@ -80,7 +80,7 @@ export class DecorateInterceptor<T> implements PostResolutionInterceptor<T> {
     const bindings = ctx.container.getBindings(token)
 
     if (bindings.length === 0) {
-      throw new NoResolutionForTokenError(
+      throw new ErrNoResolutionForToken(
         `Unable to resolve decorator '${tokenStr(token)}' for class '${tokenStr(
           ctx.token,
         )}'. Reason: Found 0 registrations. ` +
@@ -99,7 +99,7 @@ export class DecorateInterceptor<T> implements PostResolutionInterceptor<T> {
       if (primary) {
         return primary
       } else {
-        throw new NoUniqueInjectionForTokenError(token)
+        throw new ErrNoUniqueInjectionForToken(token)
       }
     } else {
       return bindings[0]

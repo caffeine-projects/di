@@ -48,6 +48,7 @@ describe('Refresh Scope', function () {
       const root = di.get(Root)
       const out = di.get(Out)
 
+      expect(scope).toBeDefined()
       expect(root).toEqual(di.get(Root))
       expect(root.id).toEqual(di.get(Root).id)
       expect(root.msg()).toEqual('test dev')
@@ -55,7 +56,7 @@ describe('Refresh Scope', function () {
       expect(out.id).toEqual(di.get(Out).id)
       expect(out.hi()).toEqual('tchau')
 
-      await scope.refresh()
+      await scope?.refresh()
 
       const rootAfter = di.get(Root)
       const outAfter = di.get(Out)

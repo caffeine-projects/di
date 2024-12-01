@@ -6,8 +6,8 @@ import { Injectable } from '../decorators/Injectable.js'
 import { Named } from '../decorators/Named.js'
 import { Primary } from '../decorators/Primary.js'
 import { DI } from '../DI'
-import { NoUniqueInjectionForTokenError } from '../internal/errors.js'
-import { NoResolutionForTokenError } from '../internal/errors.js'
+import { ErrNoUniqueInjectionForToken } from '../internal/errors.js'
+import { ErrNoResolutionForToken } from '../internal/errors.js'
 import { injectAll } from '../injections/injections.js'
 
 describe('Class', function () {
@@ -85,8 +85,8 @@ describe('Class', function () {
     it('should throw error', function () {
       const di = DI.setup()
 
-      expect(() => di.getRequired(Service)).toThrow(NoResolutionForTokenError)
-      expect(() => di.getRequired(Repo)).toThrow(NoResolutionForTokenError)
+      expect(() => di.getRequired(Service)).toThrow(ErrNoResolutionForToken)
+      expect(() => di.getRequired(Repo)).toThrow(ErrNoResolutionForToken)
       expect(di.get(Repo)).toBeUndefined()
     })
   })
@@ -192,7 +192,7 @@ describe('Class', function () {
         it('should throw error for no single match', function () {
           const di = DI.setup()
 
-          expect(() => di.get(Abs)).toThrow(NoUniqueInjectionForTokenError)
+          expect(() => di.get(Abs)).toThrow(ErrNoUniqueInjectionForToken)
         })
       })
     })
@@ -239,7 +239,7 @@ describe('Class', function () {
       it('should throw error', function () {
         const di = DI.setup()
 
-        expect(() => di.get(name)).toThrow(NoUniqueInjectionForTokenError)
+        expect(() => di.get(name)).toThrow(ErrNoUniqueInjectionForToken)
       })
     })
 

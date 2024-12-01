@@ -1,8 +1,7 @@
 import { tokenStr } from '../../Token.js'
 import { TokenDescriptor } from '../../Token.js'
 import { ConfigurationProviderOptions } from '../../decorators/ConfigurationProviderOptions.js'
-import { RepeatedInjectableConfigurationError } from '../errors.js'
-import { TypeRegistrar } from '../TypeRegistrar.js'
+import { ErrRepeatedInjectableConfiguration } from '../errors.js'
 import { Identifier } from '../types.js'
 
 const BeanWeakMap = new WeakMap()
@@ -25,7 +24,7 @@ export function configureBean(
   const existingNames = actual.names || []
 
   if (existingNames.some(value => newNames.includes(value))) {
-    throw new RepeatedInjectableConfigurationError(
+    throw new ErrRepeatedInjectableConfiguration(
       `Found repeated qualifiers for bean '${actual.token ? tokenStr(actual.token) : ''}' on method '${String(
         method,
       )}'. Qualifiers found: ${newNames.map(x => tokenStr(x)).join(', ')}`,
@@ -38,11 +37,6 @@ export function configureBean(
     interceptors,
     names: [...existingNames, ...newNames],
   })
-}
-
-export function getBeanConfiguration(target: Function, method: string | symbol): Partial<ConfigurationProviderOptions> {
-  const factories = TypeRegistrar.getFactories(target) || new Map<Identifier, Partial<ConfigurationProviderOptions>>()
-  return factories.get(method) || Def
 }
 
 export interface Metadata {

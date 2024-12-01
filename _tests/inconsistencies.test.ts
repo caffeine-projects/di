@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import { expect } from 'expect'
 import { Injectable } from '../decorators/Injectable.js'
-import { InvalidBindingError } from '../internal/errors.js'
+import { ErrInvalidBinding } from '../internal/errors.js'
 
 import { Configuration } from '../decorators/Configuration'
 
@@ -12,7 +12,7 @@ describe('Inconsistencies', function () {
 
       @Injectable(Ref)
       class Fail {}
-    }).toThrow(InvalidBindingError)
+    }).toThrow(ErrInvalidBinding)
   })
 
   it('should fail when using injectable on method level without passing a valid token', function () {
@@ -24,6 +24,6 @@ describe('Inconsistencies', function () {
           return ''
         }
       }
-    }).toThrow(InvalidBindingError)
+    }).toThrow(ErrInvalidBinding)
   })
 })

@@ -4,7 +4,7 @@ import { Binding } from '../Binding.js'
 import { isNil } from '../internal/utils/isNil.js'
 import { configureBean } from '../internal/utils/beanUtils.js'
 import { getOrCreateBeanMetadata } from '../internal/utils/beanUtils.js'
-import { InvalidBindingError } from '../internal/errors.js'
+import { ErrInvalidBinding } from '../internal/errors.js'
 import { TypeRegistrar } from '../internal/TypeRegistrar.js'
 import { ConfigurationProviderOptions } from './ConfigurationProviderOptions.js'
 
@@ -40,7 +40,7 @@ export function Bean(token: Token, nameOrDependencies?: Injection[] | Token) {
       const t = target as TFunction
 
       if (token !== undefined && !isNamedToken(token)) {
-        throw new InvalidBindingError(
+        throw new ErrInvalidBinding(
           `@Bean when used on class level only accepts injection named qualifiers of type string or symbol. ` +
             `Received: ${typeof token}. ` +
             `Check decorator on class '${context.name}'.`,
@@ -64,7 +64,7 @@ export function Bean(token: Token, nameOrDependencies?: Injection[] | Token) {
     }
 
     if (isNil(token)) {
-      throw new InvalidBindingError(
+      throw new ErrInvalidBinding(
         `@Bean when used on @Configuration classes method level, must receive a valid token. Current value is: ${String(
           token,
         )}. Check the decorators on method '${String(context.name)}' from class '${target.constructor.name}'`,

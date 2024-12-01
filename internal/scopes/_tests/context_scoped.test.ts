@@ -5,7 +5,7 @@ import { DI } from '../../../DI.js'
 import { Injectable } from '../../../decorators/Injectable.js'
 import { Lifecycle } from '../../../Lifecycle.js'
 import { Scoped } from '../../../decorators/Scoped.js'
-import { MissingRequiredProviderArgumentError } from '../../errors.js'
+import { ErrMissingRequiredProviderArgument } from '../../errors.js'
 import { LocalResolutions } from '../../../LocalResolutions.js'
 import { Binding } from '../../../Binding.js'
 
@@ -74,6 +74,6 @@ describe('Context Resolution Scoped', function () {
 
   it('should fail when no local resolutions is passed on resolve request', function () {
     const di = DI.setup()
-    expect(() => di.get(ResScopedRoot, {})).toThrow(MissingRequiredProviderArgumentError)
+    expect(() => di.get(ResScopedRoot, {})).toThrow(ErrMissingRequiredProviderArgument)
   })
 })

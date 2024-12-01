@@ -3,8 +3,8 @@ import { tokenStr } from '../../Token.js'
 import { Provider } from '../../Provider.js'
 import { Scope } from '../../Scope.js'
 import { ResolutionContext } from '../../ResolutionContext.js'
-import { IllegalScopeStateError } from '../errors.js'
-import { OutOfScopeError } from '../errors.js'
+import { ErrIllegalScopeState } from '../errors.js'
+import { ErrOutOfScope } from '../errors.js'
 
 export class RequestScope implements Scope {
   protected readonly _destructionCallbacks = new Map<number, () => Promise<void> | void>()
@@ -13,7 +13,7 @@ export class RequestScope implements Scope {
 
   activate() {
     if (this._entered) {
-      throw new IllegalScopeStateError(
+      throw new ErrIllegalScopeState(
         'Request scoping block already in progress. ' + 'Make sure to start one request scope block per time.',
       )
     }
@@ -23,7 +23,7 @@ export class RequestScope implements Scope {
 
   finish(): Promise<unknown> {
     if (!this._entered) {
-      throw new IllegalScopeStateError('No request scoping block is in progress.')
+      throw new ErrIllegalScopeState('No request scoping block is in progress.')
     }
 
     this._entered = false
@@ -39,7 +39,7 @@ export class RequestScope implements Scope {
 
   get<T>(ctx: ResolutionContext, provider: Provider<T>): T {
     if (!this._entered) {
-      throw new OutOfScopeError(`Cannot access the key '${tokenStr(ctx.token)}' outside of a request scoping block.`)
+      throw new ErrOutOfScope(`Cannot access the key '${tokenStr(ctx.token)}' outside of a request scoping block.`)
     }
 
     if (this._instances.has(ctx.binding.id)) {

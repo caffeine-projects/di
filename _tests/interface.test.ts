@@ -3,7 +3,7 @@ import { expect } from 'expect'
 import { Injectable } from '../decorators/Injectable.js'
 import { DI } from '../DI.js'
 import { v4 } from 'uuid'
-import { InvalidBindingError } from '../internal/errors.js'
+import { ErrInvalidBinding } from '../internal/errors.js'
 
 describe('interfaces', function () {
   describe('given an interface with multiple implementations and one of them using a named token', function () {
@@ -39,7 +39,7 @@ describe('interfaces', function () {
             return this.repo.save()
           }
         }
-      }).toThrow(InvalidBindingError)
+      }).toThrow(ErrInvalidBinding)
     })
 
     it('should resolve the dependency when it is correctly identified', function () {

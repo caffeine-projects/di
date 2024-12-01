@@ -1,7 +1,7 @@
-import { MultiplePrimaryError } from './internal/errors.js'
-import { NoUniqueInjectionForTokenError } from './internal/errors.js'
-import { NoResolutionForTokenError } from './internal/errors.js'
-import { CircularReferenceError } from './internal/errors.js'
+import { ErrMultiplePrimary } from './internal/errors.js'
+import { ErrNoUniqueInjectionForToken } from './internal/errors.js'
+import { ErrNoResolutionForToken } from './internal/errors.js'
+import { ErrCircularReference } from './internal/errors.js'
 import { solutions } from './internal/errors.js'
 import { newBinding } from './Binding.js'
 import { Binding } from './Binding.js'
@@ -53,7 +53,7 @@ async function resolveAsync<T, A = unknown>(
       const primaries = entries.filter(x => x.binding.primary)
 
       if (primaries.length > 1) {
-        throw new MultiplePrimaryError(
+        throw new ErrMultiplePrimary(
           `Found multiple 'primary' bindings for token '${tokenStr(token)}'. \n` +
             `Check the following bindings: ${primaries.map(x => tokenStr(x.token)).join(', ')}. \n` +
             `Only one component per token can be decorated with @${Primary.name}`,
@@ -67,7 +67,7 @@ async function resolveAsync<T, A = unknown>(
 
         container.configureBinding(token, newBinding({ ...primary, rawProvider: new TokenProvider(primary.token) }))
       } else {
-        throw new NoUniqueInjectionForTokenError(token)
+        throw new ErrNoUniqueInjectionForToken(token)
       }
     }
   }
@@ -96,7 +96,7 @@ async function resolveParamAsync<T, A = unknown>(
   args?: A,
 ): Promise<T> {
   if (dep.token === undefined || dep.token === null) {
-    throw new CircularReferenceError(
+    throw new ErrCircularReference(
       `Cannot resolve ${fmtParamError(target, indexOrProp)} from type '${tokenStr(
         target,
       )}' because the injection token is undefined.\n` +
@@ -123,7 +123,7 @@ async function resolveParamAsync<T, A = unknown>(
     return undefined as unknown as T
   }
 
-  throw new NoResolutionForTokenError(
+  throw new ErrNoResolutionForToken(
     `Unable to resolve ${fmtParamError(target, indexOrProp)} with token ${fmtTokenError(dep)}.` +
       solutions(
         `- Check if the type '${tokenStr(target)}' has all its dependencies correctly registered`,

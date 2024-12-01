@@ -12,7 +12,7 @@ import { Lifecycle } from '../Lifecycle.js'
 import { TypeRegistrar } from '../internal/TypeRegistrar.js'
 import { Scoped } from '../decorators/Scoped.js'
 import { Interceptor } from '../decorators/Interceptor.js'
-import { InvalidBindingError } from '../internal/errors.js'
+import { ErrInvalidBinding } from '../internal/errors.js'
 import { Foo } from './_testdata/circular_beans/Foo.js'
 import { Bar } from './_testdata/circular_beans/Bar.js'
 import { defer } from '../injections/injections.js'
@@ -334,6 +334,6 @@ describe('Configuration', function () {
           return new Comp()
         }
       }
-    }).toThrow(InvalidBindingError)
+    }).toThrow(ErrInvalidBinding)
   })
 })

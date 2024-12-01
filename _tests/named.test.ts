@@ -6,7 +6,7 @@ import { Injectable } from '../decorators/Injectable.js'
 import { Named } from '../decorators/Named.js'
 import { Primary } from '../decorators/Primary.js'
 import { DI } from '../DI.js'
-import { RepeatedInjectableConfigurationError } from '../internal/errors.js'
+import { ErrRepeatedInjectableConfiguration } from '../internal/errors.js'
 import { Qualifier } from '../decorators/Qualifier.js'
 import { Configuration } from '../decorators/Configuration'
 
@@ -176,7 +176,7 @@ describe('Named Dependencies', function () {
         @Named(kTest)
         @Named(kTest)
         class Dep {}
-      }).toThrow(RepeatedInjectableConfigurationError)
+      }).toThrow(ErrRepeatedInjectableConfiguration)
     })
   })
 })
