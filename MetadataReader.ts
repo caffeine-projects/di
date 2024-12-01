@@ -1,6 +1,6 @@
-import { Token } from './Token.js'
+import { Key } from './Key'
 import { Binding } from './Binding.js'
 
 export interface MetadataReader {
-  read(token: Token): Partial<Binding>
+  read(key: Key): Partial<Binding>
 }

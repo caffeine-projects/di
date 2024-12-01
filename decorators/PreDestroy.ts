@@ -6,7 +6,10 @@ export function PreDestroy() {
     const metadata = getOrCreateBeanMetadata(context.metadata)
 
     if (metadata.preDestroy) {
-      throw new ErrInvalidBinding('PreDestroy already defined')
+      throw new ErrInvalidBinding(
+        `@PreDestroy is already defined on method ${String(context.name)}.\n` +
+          'Only 1 @PreDestroy is allowed per class.',
+      )
     }
 
     metadata.preDestroy = context.name

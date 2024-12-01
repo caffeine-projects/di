@@ -1,5 +1,5 @@
 import { Binding } from '../../Binding.js'
-import { tokenStr } from '../../Token.js'
+import { keyStr } from '../../Key'
 import { Provider } from '../../Provider.js'
 import { Scope } from '../../Scope.js'
 import { ResolutionContext } from '../../ResolutionContext.js'
@@ -39,7 +39,7 @@ export class RequestScope implements Scope {
 
   get<T>(ctx: ResolutionContext, provider: Provider<T>): T {
     if (!this._entered) {
-      throw new ErrOutOfScope(`Cannot access the key '${tokenStr(ctx.token)}' outside of a request scoping block.`)
+      throw new ErrOutOfScope(`Cannot access the key '${keyStr(ctx.key)}' outside of a request scoping block.`)
     }
 
     if (this._instances.has(ctx.binding.id)) {

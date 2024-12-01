@@ -1,5 +1,5 @@
 import { Identifier } from './internal/types.js'
-import { Token } from './Token.js'
+import { Key } from './Key'
 import { Binding } from './Binding.js'
 import { BindingEntry } from './internal/BindingRegistry.js'
 import { Binder } from './Binder.js'
@@ -31,33 +31,33 @@ export interface Container {
   readonly size: number
   readonly hooks: HookListener
 
-  configureBinding<T>(token: Token<T>, incoming: Binding<T>): void
+  configureBinding<T>(key: Key<T>, incoming: Binding<T>): void
 
-  get<T, A = unknown>(token: Token<T>, args?: A): T
+  get<T, A = unknown>(key: Key<T>, args?: A): T
 
-  getRequired<T, A = unknown>(token: Token<T>, args?: A): T
+  getRequired<T, A = unknown>(key: Key<T>, args?: A): T
 
-  getMany<T, A = unknown>(token: Token<T>, args?: A): T[]
+  getMany<T, A = unknown>(key: Key<T>, args?: A): T[]
 
-  getAsync<T, A = unknown>(token: Token<T>, args?: A): Promise<T>
+  getAsync<T, A = unknown>(key: Key<T>, args?: A): Promise<T>
 
-  has<T>(token: Token<T>, checkParent?: boolean): boolean
+  has<T>(key: Key<T>, checkParent?: boolean): boolean
 
-  search(predicate: <T>(token: Token<T>, binding: Binding) => boolean): BindingEntry[]
+  search(predicate: <T>(key: Key<T>, binding: Binding) => boolean): BindingEntry[]
 
-  bind<T>(token: Token<T>): Binder<T>
+  bind<T>(key: Key<T>): Binder<T>
 
-  unbind<T>(token: Token<T>): void
+  unbind<T>(key: Key<T>): void
 
-  unbindAsync<T>(token: Token<T>): Promise<void>
+  unbindAsync<T>(key: Key<T>): Promise<void>
 
-  rebind<T>(token: Token<T>): Binder<T>
+  rebind<T>(key: Key<T>): Binder<T>
 
-  rebindAsync<T>(token: Token<T>): Promise<Binder<T>>
+  rebindAsync<T>(key: Key<T>): Promise<Binder<T>>
 
   newChild(): Container
 
-  getBindings<T>(token: Token<T>): Binding<T>[]
+  getBindings<T>(key: Key<T>): Binding<T>[]
 
   addPostProcessor(postProcessor: PostProcessor): void
 
@@ -69,9 +69,9 @@ export interface Container {
 
   resetInstances(): void
 
-  resetInstance(token: Token): void
+  resetInstance(key: Key): void
 
-  resetInstanceAsync(token: Token): Promise<void>
+  resetInstanceAsync(key: Key): Promise<void>
 
   initInstances(): void
 
@@ -81,15 +81,15 @@ export interface Container {
 
   setup(): void
 
-  configurationBeans(): IterableIterator<Token>
+  configurationBeans(): IterableIterator<Key>
 
-  types(): IterableIterator<[Token, Binding]>
+  types(): IterableIterator<[Key, Binding]>
 
-  entries(): IterableIterator<[Token, Binding]>
+  entries(): IterableIterator<[Key, Binding]>
 
   qualifiers(): IterableIterator<[Identifier, Binding[]]>
 
   toString(): string
 
-  [Symbol.iterator](): IterableIterator<[Token, Binding]>
+  [Symbol.iterator](): IterableIterator<[Key, Binding]>
 }

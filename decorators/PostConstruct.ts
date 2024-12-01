@@ -9,7 +9,10 @@ export function PostConstruct() {
     const metadata = getOrCreateBeanMetadata(context.metadata)
 
     if (metadata.postConstruct) {
-      throw new ErrInvalidBinding('PostConstruct already defined')
+      throw new ErrInvalidBinding(
+        `@PostConstruct is already defined on method ${String(context.name)}.\n` +
+          'Only 1 @PostConstruct is allowed per class.',
+      )
     }
 
     metadata.postConstruct = context.name

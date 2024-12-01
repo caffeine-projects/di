@@ -1,27 +1,31 @@
 import { ErrInvalidBinding } from '../internal/errors.js'
 import { check } from '../internal/utils/check.js'
-import { Injection, Token, TokenDescriptor } from '../Token.js'
+import { Injection, Key, KeyWithOptions } from '../Key'
 import { configureInjectionMetadata } from './util/decorator_metadata'
 
-export function Inject(
-  token: Token,
-): (target: Function | object | undefined, context: ClassMemberDecoratorContext) => void
+export function Inject(key: Key): (target: Function | object | undefined, context: ClassMemberDecoratorContext) => void
+
 export function Inject(
   dependencies: Injection[],
 ): (target: Function | object | undefined, context: ClassMemberDecoratorContext) => void
+
 export function Inject(
-  tokenOrDependencies: Token | Injection[],
+  keyOrDependencies: Key | Injection[],
 ): (target: Function | object | undefined, context: ClassMemberDecoratorContext) => void {
   return function (target: Function | object | undefined, context: ClassMemberDecoratorContext) {
     switch (context.kind) {
       case 'method':
         check(
-          Array.isArray(tokenOrDependencies),
-          new ErrInvalidBinding('when @Inject on method, dependencies must be an array'),
+          Array.isArray(keyOrDependencies),
+          new ErrInvalidBinding(
+            'When using the @Inject decorator on a method, parameter dependencies must be an array.\n' +
+              `Received: ${typeof keyOrDependencies}\n` +
+              `Check method ${String(context.name)}.`,
+          ),
         )
 
-        const deps: Array<TokenDescriptor<unknown>> = (tokenOrDependencies as Array<Injection>).map(dep =>
-          typeof dep === 'object' ? (dep as TokenDescriptor) : { token: dep },
+        const deps: Array<KeyWithOptions> = (keyOrDependencies as Array<Injection>).map(dep =>
+          typeof dep === 'object' ? (dep as KeyWithOptions) : ({ key: dep } as KeyWithOptions),
         )
 
         configureInjectionMetadata({}, deps)(target, context)
@@ -32,7 +36,7 @@ export function Inject(
       case 'field':
       case 'getter':
       case 'setter':
-        configureInjectionMetadata({ token: tokenOrDependencies as Token })(target, context)
+        configureInjectionMetadata({ key: keyOrDependencies as Key })(target, context)
 
         break
     }

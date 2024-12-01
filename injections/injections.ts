@@ -1,34 +1,34 @@
 import { DeferredCtor } from '../internal/DeferredCtor.js'
-import { InjectionOptions, Token, TokenDescriptor } from '../Token.js'
-import { TokenBag } from '../Token.js'
+import { InjectionOptions, Key, KeyWithOptions } from '../Key'
+import { ObjectInjections } from '../Key'
 
-export function inject(token: Token, ...options: Array<InjectionOptions>): TokenDescriptor {
+export function inject(key: Key, ...options: Array<InjectionOptions>): KeyWithOptions {
   let descriptor = {}
   for (const opts of options) {
     descriptor = { ...descriptor, ...opts }
   }
 
-  return { token, ...descriptor }
+  return { key, ...descriptor }
 }
 
-export function injectAll(token: Token, ...options: Array<InjectionOptions>): TokenDescriptor {
-  return inject(token, ...options, { multiple: true })
+export function injectAll(key: Key, ...options: Array<InjectionOptions>): KeyWithOptions {
+  return inject(key, ...options, { multiple: true })
 }
 
-export function defer(tokenFn: () => Token, ...options: Array<InjectionOptions>): TokenDescriptor {
-  return inject(new DeferredCtor(tokenFn), ...options)
+export function defer(keyFn: () => Key, ...options: Array<InjectionOptions>): KeyWithOptions {
+  return inject(new DeferredCtor(keyFn), ...options)
 }
 
-export function optional(token?: Token, ...options: Array<InjectionOptions>): TokenDescriptor {
-  if (token !== undefined) {
-    return inject(token, ...options, { optional: true })
+export function optional(key?: Key, ...options: Array<InjectionOptions>): KeyWithOptions {
+  if (key !== undefined) {
+    return inject(key, ...options, { optional: true })
   }
 
   return { optional: true }
 }
 
-export function object(bag: TokenBag[]): TokenDescriptor {
-  return { bag }
+export function object(bag: ObjectInjections[]): KeyWithOptions {
+  return { objectInjections: bag }
 }
 
 export const deps = {

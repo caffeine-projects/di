@@ -1,4 +1,4 @@
-import { Token } from '../Token.js'
+import { Key } from '../Key'
 
 export class DeferredCtor<T> {
   private static readonly PROXY_METHODS: ReadonlyArray<keyof ProxyHandler<object>> = [
@@ -17,9 +17,9 @@ export class DeferredCtor<T> {
     'setPrototypeOf',
   ]
 
-  constructor(private readonly callback: () => Token<T>) {}
+  constructor(private readonly callback: () => Key<T>) {}
 
-  createProxy(creator: (ctor: Token<T>) => T): T {
+  createProxy(creator: (ctor: Key<T>) => T): T {
     let init = false
     let value: T
 
@@ -35,7 +35,7 @@ export class DeferredCtor<T> {
     return new Proxy<any>({}, DeferredCtor.createHandler(deferredObject))
   }
 
-  unwrap(): Token<T> {
+  unwrap(): Key<T> {
     return this.callback()
   }
 

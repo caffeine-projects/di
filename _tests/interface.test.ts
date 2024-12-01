@@ -6,7 +6,7 @@ import { v4 } from 'uuid'
 import { ErrInvalidBinding } from '../internal/errors.js'
 
 describe('interfaces', function () {
-  describe('given an interface with multiple implementations and one of them using a named token', function () {
+  describe('given an interface with multiple implementations and one of them using a named key', function () {
     const kRepo = Symbol('repo')
 
     interface Repository {
@@ -29,7 +29,7 @@ describe('interfaces', function () {
       }
     }
 
-    it.skip('should fail when the dependency does not have the correct token', function () {
+    it.skip('should fail when the dependency does not have the correct key', function () {
       expect(() => {
         @Injectable()
         class Service {

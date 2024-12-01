@@ -323,7 +323,7 @@ describe('Configuration', function () {
     })
   })
 
-  it('should fail when no token is specified', function () {
+  it('should fail when no key is specified', function () {
     expect(() => {
       class Comp {}
 

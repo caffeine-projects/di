@@ -1,7 +1,7 @@
 import { Binding } from '../../Binding.js'
 import { Scope } from '../../Scope.js'
 import { Provider } from '../../Provider.js'
-import { tokenStr } from '../../Token.js'
+import { keyStr } from '../../Key'
 import { LocalResolutions } from '../../LocalResolutions.js'
 import { ResolutionContext } from '../../ResolutionContext.js'
 import { ErrMissingRequiredProviderArgument } from '../errors.js'
@@ -14,12 +14,12 @@ export class LocalResolutionScope implements Scope {
 
     if (!(ctx.args instanceof LocalResolutions)) {
       throw new ErrMissingRequiredProviderArgument(
-        `Local Resolution Scope: Failed to provide a component for token '${tokenStr(
-          ctx.token,
+        `Local Resolution Scope: Failed to provide a component for key '${keyStr(
+          ctx.key,
         )}' inside local resolution scope. \n` +
           `Reason: missing argument of type 'LocalResolutions'. \n` +
           `Received: '${typeof ctx.args}'. \n` +
-          `Possible Solutions: container.get(token, <Pass an instance of LocalResolutions>)`,
+          `Possible Solutions: container.get(key, <Pass an instance of LocalResolutions>)`,
       )
     }
 

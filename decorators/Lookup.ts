@@ -1,5 +1,5 @@
-import { Token } from '../Token.js'
-import { isValidToken } from '../Token.js'
+import { Key } from '../Key'
+import { isValidKey } from '../Key'
 import { notNil } from '../internal/utils/notNil.js'
 import { ErrInvalidBinding } from '../internal/errors.js'
 import { ErrInvalidInjection } from '../internal/errors.js'
@@ -10,22 +10,22 @@ export interface LookupOptions {
   optional?: boolean
 }
 
-export function Lookup(token: Token, options?: LookupOptions) {
+export function Lookup(key: Key, options?: LookupOptions) {
   return function (target: Object, context: ClassGetterDecoratorContext | ClassMethodDecoratorContext) {
     if (context.kind === 'getter') {
       notNil(
-        token,
+        key,
         `@Lookup() on property key '${String(context.name)}' at class '${
           target.constructor.name
         }' must not be null or undefined.`,
       )
     }
 
-    if (!isValidToken(token)) {
+    if (!isValidKey(key)) {
       throw new ErrInvalidInjection(
         `@Lookup() decorator on property '${String(context.name)}' at class '${
           target.constructor.name
-        }' doesn't contain a valid injection token. Value is typeof ${typeof token}. ` +
+        }' doesn't contain a valid injection key. Value is typeof ${typeof key}. ` +
           `It must be a class ref, string or symbol.`,
       )
     }
@@ -40,6 +40,6 @@ export function Lookup(token: Token, options?: LookupOptions) {
       }
     }
 
-    metadata.lookupProperties.set(context.name, { ...options, token: token })
+    metadata.lookupProperties.set(context.name, { ...options, key: key })
   }
 }

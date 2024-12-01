@@ -6,8 +6,8 @@ import { Injectable } from '../decorators/Injectable.js'
 import { Named } from '../decorators/Named.js'
 import { Primary } from '../decorators/Primary.js'
 import { DI } from '../DI'
-import { ErrNoUniqueInjectionForToken } from '../internal/errors.js'
-import { ErrNoResolutionForToken } from '../internal/errors.js'
+import { ErrNoUniqueInjectionForKey } from '../internal/errors.js'
+import { ErrNoResolutionForKey } from '../internal/errors.js'
 import { injectAll } from '../injections/injections.js'
 
 describe('Class', function () {
@@ -85,8 +85,8 @@ describe('Class', function () {
     it('should throw error', function () {
       const di = DI.setup()
 
-      expect(() => di.getRequired(Service)).toThrow(ErrNoResolutionForToken)
-      expect(() => di.getRequired(Repo)).toThrow(ErrNoResolutionForToken)
+      expect(() => di.getRequired(Service)).toThrow(ErrNoResolutionForKey)
+      expect(() => di.getRequired(Repo)).toThrow(ErrNoResolutionForKey)
       expect(di.get(Repo)).toBeUndefined()
     })
   })
@@ -133,7 +133,7 @@ describe('Class', function () {
       expect(lang.all[1].hello()).toEqual('oi')
     })
 
-    it('should resolve class dependency array with all types that inherits from provided abstract class token type', function () {
+    it('should resolve class dependency array with all types that inherits from provided abstract class Key type', function () {
       const di = DI.setup()
       const lang = di.get(LangByType)
 
@@ -142,7 +142,7 @@ describe('Class', function () {
       expect(lang.all[1].hello()).toEqual('oi')
     })
 
-    it('should resolve all instances that inherits from provided abstract class token type', function () {
+    it('should resolve all instances that inherits from provided abstract class Key type', function () {
       const di = DI.setup()
       const all = di.getMany(Base)
 
@@ -150,8 +150,8 @@ describe('Class', function () {
     })
   })
 
-  describe('resolving multiple for same token', function () {
-    describe('when token is an abstract class', function () {
+  describe('resolving multiple for same Key', function () {
+    describe('when Key is an abstract class', function () {
       abstract class RootRep {
         abstract value(): string
       }
@@ -192,12 +192,12 @@ describe('Class', function () {
         it('should throw error for no single match', function () {
           const di = DI.setup()
 
-          expect(() => di.get(Abs)).toThrow(ErrNoUniqueInjectionForToken)
+          expect(() => di.get(Abs)).toThrow(ErrNoUniqueInjectionForKey)
         })
       })
     })
 
-    describe('when multiple resolutions exists for a named token', function () {
+    describe('when multiple resolutions exists for a named Key', function () {
       const kName = Symbol('svc')
 
       @Injectable()
@@ -239,7 +239,7 @@ describe('Class', function () {
       it('should throw error', function () {
         const di = DI.setup()
 
-        expect(() => di.get(name)).toThrow(ErrNoUniqueInjectionForToken)
+        expect(() => di.get(name)).toThrow(ErrNoUniqueInjectionForKey)
       })
     })
 

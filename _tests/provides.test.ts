@@ -21,7 +21,7 @@ describe('Provides', function () {
 
   class RepoProvider<T = any> implements Provider<Repo<T>> {
     provide(ctx: ResolutionContext): Repo<T> {
-      return new Repo<T>(ctx.token as any)
+      return new Repo<T>(ctx.key as any)
     }
   }
 
@@ -47,7 +47,7 @@ describe('Provides', function () {
     expect(repo.id).toEqual(repo2.id)
   })
 
-  it('should provide another bean respecting configurations set on token class', function () {
+  it('should provide another bean respecting configurations set on key class', function () {
     const di = DI.setup()
     const repo = di.get<Repo<User>>(TrUser)
     const repo2 = di.get<Repo>(TrUser)

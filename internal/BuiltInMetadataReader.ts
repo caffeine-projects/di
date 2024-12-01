@@ -1,24 +1,24 @@
 import { Binding } from '../Binding.js'
-import { TokenDescriptor } from '../Token.js'
+import { KeyWithOptions } from '../Key'
 import { MetadataReader } from '../MetadataReader.js'
 import { Symbols } from '../Symbols.js'
 
 export class BuiltInMetadataReader implements MetadataReader {
-  read(token: any): Partial<Binding> {
-    if (typeof token === 'function') {
-      const symbols = Object.getOwnPropertySymbols(token)
+  read(key: any): Partial<Binding> {
+    if (typeof key === 'function') {
+      const symbols = Object.getOwnPropertySymbols(key)
       const kDeps = symbols.find(x => x === Symbols.injections)
 
       if (kDeps) {
-        const deps = token[kDeps]
-        const injections = new Array<TokenDescriptor>(deps.length)
+        const deps = key[kDeps]
+        const injections = new Array<KeyWithOptions>(deps.length)
 
         for (let i = 0; i < deps.length; i++) {
           const d = deps[i]
           if (typeof d === 'object') {
             injections[i] = d
           } else {
-            injections[i] = { token: d }
+            injections[i] = { key: d }
           }
         }
 

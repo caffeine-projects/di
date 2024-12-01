@@ -1,4 +1,4 @@
-import { Token } from '../Token.js'
+import { Key } from '../Key'
 import { configureBean } from '../internal/utils/beanUtils.js'
 import { TypeRegistrar } from '../internal/TypeRegistrar.js'
 import { Identifier } from '../internal/types.js'
@@ -8,7 +8,7 @@ import { getOrCreateBeanMetadata } from '../internal/utils/beanUtils.js'
 export function Scoped(scopeId: Identifier) {
   return function (target: Function | object, context: DecoratorContext) {
     if (context.kind === 'class') {
-      TypeRegistrar.configure(target as Token, { scopeId })
+      TypeRegistrar.configure(target as Key, { scopeId })
       return
     }
 

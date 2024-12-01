@@ -6,7 +6,7 @@ import { Injectable } from '../decorators/Injectable.js'
 import { Named } from '../decorators/Named.js'
 import { DI } from '../DI.js'
 import { BuiltInMetadataReader } from '../internal/BuiltInMetadataReader.js'
-import { Token } from '../Token.js'
+import { Key } from '../Key'
 import { MetadataReader } from '../MetadataReader.js'
 import { optional } from '../injections/injections.js'
 
@@ -52,8 +52,8 @@ describe('DI', function () {
     const di = DI.setup()
     const entries = new Map(di.entries())
 
-    for (const [token, binding] of di.entries()) {
-      expect(token).toBeDefined()
+    for (const [key, binding] of di.entries()) {
+      expect(key).toBeDefined()
       expect(binding).toBeDefined()
     }
 
@@ -69,8 +69,8 @@ describe('DI', function () {
     const entries = new Map(di.entries())
     const named = entries.get(NamedTest)
 
-    for (const [token, bindings] of di.qualifiers()) {
-      expect(token).toBeDefined()
+    for (const [key, bindings] of di.qualifiers()) {
+      expect(key).toBeDefined()
       expect(bindings).toBeInstanceOf(Array)
     }
 
@@ -82,8 +82,8 @@ describe('DI', function () {
     const di = DI.setup()
     const entries = new Map(di)
 
-    for (const [token, binding] of di) {
-      expect(token).toBeDefined()
+    for (const [key, binding] of di) {
+      expect(key).toBeDefined()
       expect(binding).toBeDefined()
     }
 
@@ -100,9 +100,9 @@ describe('DI', function () {
       class Custom implements MetadataReader {
         constructor(private readonly original: MetadataReader) {}
 
-        read(token: Token): Partial<Binding> {
+        read(key: Key): Partial<Binding> {
           spy()
-          return this.original.read(token)
+          return this.original.read(key)
         }
       }
 
@@ -122,7 +122,7 @@ describe('DI', function () {
     @Configuration()
     class Conf {}
 
-    it('should return only class type tokens decorated with @Configuration()', function () {
+    it('should return only class type keys decorated with @Configuration()', function () {
       const di = DI.setup()
       const conf = Array.from(di.configurationBeans())
 

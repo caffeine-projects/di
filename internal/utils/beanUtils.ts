@@ -1,10 +1,27 @@
-import { tokenStr } from '../../Token.js'
-import { TokenDescriptor } from '../../Token.js'
-import { ConfigurationProviderOptions } from '../../decorators/ConfigurationProviderOptions.js'
+import { keyStr } from '../../Key'
+import { KeyWithOptions } from '../../Key'
+import { Key } from '../../Key'
 import { ErrRepeatedInjectableConfiguration } from '../errors.js'
 import { Identifier } from '../types.js'
+import { Conditional } from '../../decorators/ConditionalOn'
+import { PostResolutionInterceptor } from '../../PostResolutionInterceptor'
 
 const BeanWeakMap = new WeakMap()
+
+export interface ConfigurationProviderOptions {
+  scopeId: Identifier
+  key: Key
+  dependencies: KeyWithOptions[]
+  conditionals: Conditional[]
+  names: Identifier[]
+  type: Function
+  primary: boolean
+  late: boolean
+  lazy: boolean
+  options: object
+  byPassPostProcessors: boolean
+  interceptors: PostResolutionInterceptor[]
+}
 
 const Def: Partial<ConfigurationProviderOptions> = {
   dependencies: [],
@@ -25,9 +42,9 @@ export function configureBean(
 
   if (existingNames.some(value => newNames.includes(value))) {
     throw new ErrRepeatedInjectableConfiguration(
-      `Found repeated qualifiers for bean '${actual.token ? tokenStr(actual.token) : ''}' on method '${String(
+      `Found repeated qualifiers for bean '${actual.key ? keyStr(actual.key) : ''}' on method '${String(
         method,
-      )}'. Qualifiers found: ${newNames.map(x => tokenStr(x)).join(', ')}`,
+      )}'. Qualifiers found: ${newNames.map(x => keyStr(x)).join(', ')}`,
     )
   }
 
@@ -41,9 +58,9 @@ export function configureBean(
 
 export interface Metadata {
   methods: Map<Identifier, ConfigurationProviderOptions>
-  injectableProperties: Map<Identifier, TokenDescriptor<unknown>>
-  injectableMethods: Map<Identifier, TokenDescriptor<unknown>[]>
-  lookupProperties: Map<Identifier, TokenDescriptor<unknown>>
+  injectableProperties: Map<Identifier, KeyWithOptions<unknown>>
+  injectableMethods: Map<Identifier, KeyWithOptions<unknown>[]>
+  lookupProperties: Map<Identifier, KeyWithOptions<unknown>>
   postConstruct: string | symbol | undefined
   preDestroy: string | symbol | undefined
 }

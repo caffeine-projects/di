@@ -87,7 +87,7 @@ describe('Named Dependencies', function () {
       }).toThrow()
     })
 
-    it('should fail when repeating the same bean token', function () {
+    it('should fail when repeating the same bean key', function () {
       const kOne = Symbol('one')
 
       expect(() => {

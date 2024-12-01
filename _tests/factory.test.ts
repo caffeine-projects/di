@@ -25,10 +25,10 @@ describe('Factory Provider', function () {
   }
 
   class Repo {
-    constructor(private readonly token?: string) {}
+    constructor(private readonly key?: string) {}
 
     find() {
-      return `test-${this.token ? this.token : 'empty'}`
+      return `test-${this.key ? this.key : 'empty'}`
     }
   }
 

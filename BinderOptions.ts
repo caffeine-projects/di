@@ -1,4 +1,4 @@
-import { Token } from './Token.js'
+import { Key } from './Key'
 import { Binding } from './Binding.js'
 import { notNil } from './internal/utils/notNil.js'
 import { Lifecycle } from './Lifecycle.js'
@@ -42,7 +42,7 @@ export interface BinderOptions<T> {
 export class BindToOptions<T> implements BinderOptions<T> {
   constructor(
     private readonly container: Container,
-    private readonly token: Token<T>,
+    private readonly key: Key<T>,
     private readonly binding: Binding<T>,
   ) {}
 
@@ -56,77 +56,77 @@ export class BindToOptions<T> implements BinderOptions<T> {
     }
 
     this.binding.scopeId = scopeId
-    this.container.configureBinding(this.token, this.binding)
+    this.container.configureBinding(this.key, this.binding)
 
     return this
   }
 
   qualifiers(...names: Identifier[]): BinderOptions<T> {
     this.binding.names = notNil(names)
-    this.container.configureBinding(this.token, this.binding)
+    this.container.configureBinding(this.key, this.binding)
 
     return this
   }
 
   lazy(lazy = true): BinderOptions<T> {
     this.binding.lazy = lazy
-    this.container.configureBinding(this.token, this.binding)
+    this.container.configureBinding(this.key, this.binding)
 
     return this
   }
 
   primary(primary = true): BinderOptions<T> {
     this.binding.primary = primary
-    this.container.configureBinding(this.token, this.binding)
+    this.container.configureBinding(this.key, this.binding)
 
     return this
   }
 
   singletonScoped(): BinderOptions<T> {
     this.binding.scopeId = Lifecycle.SINGLETON
-    this.container.configureBinding(this.token, this.binding)
+    this.container.configureBinding(this.key, this.binding)
 
     return this
   }
 
   transientScoped(): BinderOptions<T> {
     this.binding.scopeId = Lifecycle.TRANSIENT
-    this.container.configureBinding(this.token, this.binding)
+    this.container.configureBinding(this.key, this.binding)
 
     return this
   }
 
   containerScoped(): BinderOptions<T> {
     this.binding.scopeId = Lifecycle.CONTAINER
-    this.container.configureBinding(this.token, this.binding)
+    this.container.configureBinding(this.key, this.binding)
 
     return this
   }
 
   localScoped(): BinderOptions<T> {
     this.binding.scopeId = Lifecycle.LOCAL_RESOLUTION
-    this.container.configureBinding(this.token, this.binding)
+    this.container.configureBinding(this.key, this.binding)
 
     return this
   }
 
   refreshableScoped(): BinderOptions<T> {
     this.binding.scopeId = Lifecycle.REFRESH
-    this.container.configureBinding(this.token, this.binding)
+    this.container.configureBinding(this.key, this.binding)
 
     return this
   }
 
   requestScoped(): BinderOptions<T> {
     this.binding.scopeId = Lifecycle.REQUEST
-    this.container.configureBinding(this.token, this.binding)
+    this.container.configureBinding(this.key, this.binding)
 
     return this
   }
 
   byPassPostProcessors(): BinderOptions<T> {
     this.binding.byPassPostProcessors = true
-    this.container.configureBinding(this.token, this.binding)
+    this.container.configureBinding(this.key, this.binding)
 
     return this
   }
@@ -137,7 +137,7 @@ export class BindToOptions<T> implements BinderOptions<T> {
     this.binding.interceptors.push(
       notNil(typeof interceptor === 'function' ? new FunctionPostResolutionInterceptor(interceptor) : interceptor),
     )
-    this.container.configureBinding(this.token, this.binding)
+    this.container.configureBinding(this.key, this.binding)
 
     return this
   }
@@ -146,7 +146,7 @@ export class BindToOptions<T> implements BinderOptions<T> {
     check(typeof options === 'object', `Options must be an object type. Received: '${typeof options}'`)
 
     this.binding.options = options
-    this.container.configureBinding(this.token, this.binding)
+    this.container.configureBinding(this.key, this.binding)
 
     return this
   }

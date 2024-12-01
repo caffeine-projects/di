@@ -1,35 +1,34 @@
 import { Binding } from '../Binding.js'
 import { ErrInvalidBinding } from '../internal/errors.js'
-import { isNamedToken } from '../Token.js'
-import { Token } from '../Token.js'
-import { Injection } from '../Token.js'
+import { isNamedKey } from '../Key'
+import { Key } from '../Key'
+import { Injection } from '../Key'
 import { TypeRegistrar } from '../internal/TypeRegistrar.js'
 import { getOrCreateBeanMetadata } from '../internal/utils/beanUtils'
 
-export function Injectable<T>(tokenOrDependencies?: Token | Injection[], dependencies?: Injection[]) {
+export function Injectable<T>(keyOrDependencies?: Key | Injection[], dependencies?: Injection[]) {
   return function <TFunction extends Function>(
     target: TFunction,
     context: ClassDecoratorContext | ClassMethodDecoratorContext,
   ) {
     dependencies = dependencies || []
 
-    let token =
-      tokenOrDependencies !== undefined && !Array.isArray(tokenOrDependencies) ? tokenOrDependencies : undefined
+    let key = keyOrDependencies !== undefined && !Array.isArray(keyOrDependencies) ? keyOrDependencies : undefined
     const deps =
-      tokenOrDependencies === undefined ? [] : Array.isArray(tokenOrDependencies) ? tokenOrDependencies : dependencies
+      keyOrDependencies === undefined ? [] : Array.isArray(keyOrDependencies) ? keyOrDependencies : dependencies
 
-    if (token !== undefined && !isNamedToken(token)) {
+    if (key !== undefined && !isNamedKey(key)) {
       throw new ErrInvalidBinding(
-        `@Injectable when it is used to decorate a class, it only accepts injection named qualifiers of type string or symbol. ` +
-          `Received: ${typeof token}. ` +
+        `@Injectable when it is decorating a class, it only accepts injection named qualifiers of type string or symbol.\n` +
+          `Received: ${typeof key}.\n` +
           `Check decorator on class '${String(context.name)}'.`,
       )
     }
 
-    token = token ? token : target
+    key = key ? key : target
 
     const metadata = getOrCreateBeanMetadata(context.metadata)
-    const injections = deps.map(dep => (typeof dep === 'object' ? dep : { token: dep }))
+    const injections = deps.map(dep => (typeof dep === 'object' ? dep : { key: dep }))
 
     TypeRegistrar.configure<T>(target, {
       injections: injections,
@@ -37,7 +36,7 @@ export function Injectable<T>(tokenOrDependencies?: Token | Injection[], depende
       injectableMethods: metadata.injectableMethods,
       lookupProperties: metadata.lookupProperties,
       type: target,
-      names: token ? [token] : undefined,
+      names: key ? [key] : undefined,
       postConstruct: metadata.postConstruct,
       preDestroy: metadata.preDestroy,
     } as Partial<Binding>)

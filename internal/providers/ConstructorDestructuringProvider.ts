@@ -12,16 +12,16 @@ export class ConstructorDestructuringProvider<T> implements Provider<T> {
     for (let i = 0; i < ctx.binding.injections.length; i++) {
       const injection = ctx.binding.injections[i]
 
-      if (injection.bag) {
+      if (injection.objectInjections) {
         const bag: Record<string | symbol, unknown> = {}
 
-        for (const tokenBag of injection.bag) {
-          bag[tokenBag.key] = Resolver.resolveParam(ctx.container, ctx.token, { ...tokenBag }, i, ctx.args)
+        for (const objInjections of injection.objectInjections) {
+          bag[objInjections.property] = Resolver.resolveParam(ctx.container, ctx.key, { ...objInjections }, i, ctx.args)
         }
 
         args[i] = bag
       } else {
-        args[i] = Resolver.resolveParam(ctx.container, ctx.token, injection, i, ctx.args)
+        args[i] = Resolver.resolveParam(ctx.container, ctx.key, injection, i, ctx.args)
       }
     }
 

@@ -4,7 +4,7 @@ import { Bean } from '../decorators/Bean.js'
 import { Injectable } from '../decorators/Injectable.js'
 import { Namespace } from '../decorators/Namespace.js'
 import { DI } from '../DI.js'
-import { ErrNoResolutionForToken } from '../internal/errors.js'
+import { ErrNoResolutionForKey } from '../internal/errors.js'
 import { Configuration } from '../decorators/Configuration'
 
 describe('Namespace', function () {
@@ -66,7 +66,7 @@ describe('Namespace', function () {
     })
 
     it('should fail when a component from one namespace has a reference for component from another', function () {
-      expect(() => di.get(NsDifferentRef)).toThrow(ErrNoResolutionForToken)
+      expect(() => di.get(NsDifferentRef)).toThrow(ErrNoResolutionForKey)
     })
   })
 
@@ -93,7 +93,7 @@ describe('Namespace', function () {
       })
 
       it('should fail when a component from one namespace has a reference for component from another', function () {
-        expect(() => di.get(kDiffRef)).toThrow(ErrNoResolutionForToken)
+        expect(() => di.get(kDiffRef)).toThrow(ErrNoResolutionForKey)
       })
     })
   })

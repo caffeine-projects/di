@@ -2,13 +2,14 @@ import { TypeRegistrar } from '../internal/TypeRegistrar.js'
 import { configureBean } from '../internal/utils/beanUtils.js'
 import { getOrCreateBeanMetadata } from '../internal/utils/beanUtils.js'
 import { Container } from '../Container.js'
-import { Token } from '../Token.js'
+import { Key } from '../Key'
 import { Binding } from '../Binding.js'
-import { ConfigurationProviderOptions } from './ConfigurationProviderOptions'
+
+import { ConfigurationProviderOptions } from '../internal/utils/beanUtils.js'
 
 export interface ConditionContext {
   container: Container
-  token: Token
+  key: Key
   binding: Binding
 }
 

@@ -1,48 +1,49 @@
-import { Injection, Token } from '../Token.js'
-import { isNamedToken } from '../Token.js'
+import { Injection, Key } from '../Key'
+import { isNamedKey } from '../Key'
 import { Binding } from '../Binding.js'
 import { isNil } from '../internal/utils/isNil.js'
 import { configureBean } from '../internal/utils/beanUtils.js'
 import { getOrCreateBeanMetadata } from '../internal/utils/beanUtils.js'
+import { ConfigurationProviderOptions } from '../internal/utils/beanUtils.js'
 import { ErrInvalidBinding } from '../internal/errors.js'
 import { TypeRegistrar } from '../internal/TypeRegistrar.js'
-import { ConfigurationProviderOptions } from './ConfigurationProviderOptions.js'
+import { KeyWithOptions } from '../Key'
 
-export function Bean(token: Token): <TFunction extends Function>(target: TFunction, context: DecoratorContext) => void
+export function Bean(key: Key): <TFunction extends Function>(target: TFunction, context: DecoratorContext) => void
 
 export function Bean(
-  token: Token,
+  key: Key,
   dependencies?: Injection[],
 ): <TFunction extends Function>(target: TFunction, context: DecoratorContext) => void
 
 export function Bean(
-  token: Token,
-  name?: Token,
+  key: Key,
+  name?: Key,
   dependencies?: Injection[],
 ): <TFunction extends Function>(target: TFunction, context: DecoratorContext) => void
 
-export function Bean(token: Token, nameOrDependencies?: Injection[] | Token) {
+export function Bean(key: Key, nameOrDependencies?: Injection[] | Key) {
   return function <TFunction extends Function>(target: TFunction, context: DecoratorContext) {
     const injections = isNil(nameOrDependencies)
       ? []
       : Array.isArray(nameOrDependencies)
         ? ((nameOrDependencies as Injection[]).map(dep =>
-            typeof dep === 'object' ? dep : { token: dep },
+            typeof dep === 'object' ? dep : ({ key: dep } as KeyWithOptions),
           ) as Injection[])
         : []
     const name = isNil(nameOrDependencies)
       ? undefined
-      : isNamedToken(nameOrDependencies)
-        ? (nameOrDependencies as Token)
+      : isNamedKey(nameOrDependencies)
+        ? (nameOrDependencies as Key)
         : undefined
 
     if (context.kind === 'class') {
       const t = target as TFunction
 
-      if (token !== undefined && !isNamedToken(token)) {
+      if (key !== undefined && !isNamedKey(key)) {
         throw new ErrInvalidBinding(
-          `@Bean when used on class level only accepts injection named qualifiers of type string or symbol. ` +
-            `Received: ${typeof token}. ` +
+          `@Bean when used on a class, it only accepts injection named qualifiers of type string or symbol.\n` +
+            `Received: ${typeof key}.\n` +
             `Check decorator on class '${context.name}'.`,
         )
       }
@@ -63,21 +64,21 @@ export function Bean(token: Token, nameOrDependencies?: Injection[] | Token) {
       return
     }
 
-    if (isNil(token)) {
+    if (isNil(key)) {
       throw new ErrInvalidBinding(
-        `@Bean when used on @Configuration classes method level, must receive a valid token. Current value is: ${String(
-          token,
-        )}. Check the decorators on method '${String(context.name)}' from class '${target.constructor.name}'`,
+        '@Bean when used on a @Configuration class method, it must receive a valid key.\n' +
+          `Current value is: ${String(key)}.\n` +
+          `Check the decorators on method '${String(context.name)}' on class '${target.constructor.name}'.`,
       )
     }
 
     const metadata = getOrCreateBeanMetadata(context.metadata)
-    const type = typeof token === 'function' ? token : undefined
-    const actualToken = typeof name === 'undefined' ? token : name
+    const type = typeof key === 'function' ? key : undefined
+    const actualKey = typeof name === 'undefined' ? key : name
 
     configureBean(metadata, context.name, {
       dependencies: injections,
-      token: actualToken,
+      key: actualKey,
       type,
     } as Partial<ConfigurationProviderOptions>)
   }

@@ -1,10 +1,10 @@
-import { Token } from './Token.js'
+import { Key } from './Key'
 import { Binding } from './Binding.js'
 import { Container } from './Container.js'
 
 export interface ResolutionContext<A = unknown> {
   container: Container
-  token: Token
+  key: Key
   binding: Binding
   args?: A
 }

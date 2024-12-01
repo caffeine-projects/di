@@ -1,17 +1,17 @@
 import { newId } from './internal/utils/newId.js'
 import { PostResolutionInterceptor } from './PostResolutionInterceptor.js'
 import { Provider } from './Provider.js'
-import { Token } from './Token.js'
-import { TokenDescriptor } from './Token.js'
+import { Key } from './Key'
+import { KeyWithOptions } from './Key'
 import { Conditional } from './decorators/ConditionalOn.js'
 import { Identifier } from './internal/types.js'
 
 export interface Binding<T = any> {
   id: number
-  injections: TokenDescriptor<unknown>[]
-  injectableProperties: Map<Identifier, TokenDescriptor<unknown>>
-  injectableMethods: Map<Identifier, TokenDescriptor<unknown>[]>
-  lookupProperties: Map<Identifier, TokenDescriptor<unknown>>
+  injections: KeyWithOptions<unknown>[]
+  injectableProperties: Map<Identifier, KeyWithOptions<unknown>>
+  injectableMethods: Map<Identifier, KeyWithOptions<unknown>[]>
+  lookupProperties: Map<Identifier, KeyWithOptions<unknown>>
   interceptors: PostResolutionInterceptor[]
   namespace: Identifier
   scopeId: Identifier
@@ -22,7 +22,7 @@ export interface Binding<T = any> {
   configuredBy?: string
   type?: Function
   configuration?: boolean
-  tokensProvided: Token[]
+  keysProvided: Key[]
   primary?: boolean
   late?: boolean
   lazy?: boolean
@@ -52,7 +52,7 @@ export function newBinding<T>(initial: Partial<Binding<T>> = {}): Binding<T> {
     preDestroy: initial.preDestroy,
     postConstruct: initial.postConstruct,
     configuration: initial.configuration,
-    tokensProvided: initial.tokensProvided || [],
+    keysProvided: initial.keysProvided || [],
     type: initial.type,
     byPassPostProcessors: initial.byPassPostProcessors,
     scopeId: initial.scopeId!,

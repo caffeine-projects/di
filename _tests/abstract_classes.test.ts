@@ -118,7 +118,7 @@ describe('Abstract Classes', function () {
       }
     }
 
-    it('should resolve instance based on abstract class token', function () {
+    it('should resolve instance based on abstract class key', function () {
       const di = DI.setup()
       const impl1 = di.get<Impl>(Base)
       const impl2 = di.get<Impl>(Base)

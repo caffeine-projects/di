@@ -1,43 +1,43 @@
 import { Binding } from '../Binding.js'
-import { Token } from '../Token.js'
+import { Key } from '../Key'
 import { notNil } from './utils/notNil.js'
 
 export interface BindingEntry {
-  token: Token
+  key: Key
   binding: Binding
 }
 
 export class BindingRegistry {
-  private readonly _types: Map<Token, Binding> = new Map()
+  private readonly _types: Map<Key, Binding> = new Map()
 
-  register<T>(token: Token<T>, binding: Binding<T>): void {
-    notNil(token)
+  register<T>(Key: Key<T>, binding: Binding<T>): void {
+    notNil(Key)
     notNil(binding)
     notNil(binding.id)
 
-    const entry = this.getEntry(token)
+    const entry = this.getEntry(Key)
 
-    this._types.set(token, { ...entry, ...binding })
+    this._types.set(Key, { ...entry, ...binding })
   }
 
-  get<T>(token: Token<T>): Binding<T> | undefined {
-    return this._types.get(token)
+  get<T>(Key: Key<T>): Binding<T> | undefined {
+    return this._types.get(Key)
   }
 
-  has(token: Token): boolean {
-    return this._types.has(token)
+  has(Key: Key): boolean {
+    return this._types.has(Key)
   }
 
-  entries(): IterableIterator<[Token<unknown>, Binding]> {
+  entries(): IterableIterator<[Key<unknown>, Binding]> {
     return this._types.entries()
   }
 
   toArray(): BindingEntry[] {
-    return Array.from(this._types.entries()).map(([token, registration]) => ({ token, binding: registration }))
+    return Array.from(this._types.entries()).map(([Key, registration]) => ({ key: Key, binding: registration }))
   }
 
-  delete(token: Token): boolean {
-    return this._types.delete(token)
+  delete(Key: Key): boolean {
+    return this._types.delete(Key)
   }
 
   clear(): void {
@@ -48,15 +48,15 @@ export class BindingRegistry {
     return this._types.size
   }
 
-  private getEntry(token: Token<unknown>): Binding {
-    const entry = this._types.get(token)
+  private getEntry(Key: Key<unknown>): Binding {
+    const entry = this._types.get(Key)
 
     if (entry) {
       return entry
     }
 
-    this._types.set(token, {} as Binding)
+    this._types.set(Key, {} as Binding)
 
-    return this._types.get(token) as Binding
+    return this._types.get(Key) as Binding
   }
 }

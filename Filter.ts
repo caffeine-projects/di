@@ -1,8 +1,8 @@
-import { Token } from './Token.js'
+import { Key } from './Key'
 import { Binding } from './Binding.js'
 
 export interface FilterContext {
-  token: Token
+  key: Key
   binding: Binding
 }
 

@@ -23,7 +23,7 @@ describe('Injecting On Functions', function () {
     const fn = (dep: Dep, nm: Nm, opt?: Opt) => (message: string) =>
       `received: ${message} - ${dep.value} - ${nm.id} - ${opt === undefined}`
 
-    di.bind(fn).toFunction(fn, [DI.arg(Dep), DI.arg(kVal), { token: Opt, optional: true }])
+    di.bind(fn).toFunction(fn, [DI.arg(Dep), DI.arg(kVal), { key: Opt, optional: true }])
 
     const theFunction = di.get<(message: string) => string>(fn)
     const res = theFunction('hello')

@@ -4,18 +4,17 @@ import { DI } from '../DI.js'
 import { Injectable } from '../decorators/Injectable.js'
 import { FilterContext } from '../Filter.js'
 import { optional } from '../injections/injections.js'
-import { ClassDecorator } from '../decorators/types'
 
 describe('Filters', function () {
   const wMap = new Map()
 
-  function Custom(): ClassDecorator {
+  function Custom(): <TFunction extends Function>(target: TFunction, context: ClassDecoratorContext) => void {
     return function (target: Function, context: DecoratorContext) {
       wMap.set(target, true)
     }
   }
 
-  const filter = (ctx: FilterContext) => wMap.get(ctx.token) === true
+  const filter = (ctx: FilterContext) => wMap.get(ctx.key) === true
 
   @Injectable()
   class Valid {}

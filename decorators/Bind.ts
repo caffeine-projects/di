@@ -4,7 +4,8 @@ import { notNil } from '../internal/utils/notNil.js'
 import { configureBean } from '../internal/utils/beanUtils.js'
 import { getOrCreateBeanMetadata } from '../internal/utils/beanUtils.js'
 import { TypeRegistrar } from '../internal/TypeRegistrar.js'
-import { Injection } from '../Token.js'
+import { Injection } from '../Key'
+import { KeyWithOptions } from '../Key'
 
 export function Bind<T>(
   options: Partial<Exclude<Binding<T>, 'id' | 'scopedProvider' | 'configuration' | 'cachedInstance'>>,
@@ -18,7 +19,8 @@ export function Bind<T>(
   return function <TFunction extends Function>(target: TFunction | object, context: DecoratorContext) {
     if (context.kind === 'class') {
       const metadata = getOrCreateBeanMetadata(context.metadata)
-      const injections = dependencies?.map(dep => (typeof dep === 'object' ? dep : { token: dep })) ?? []
+      const injections =
+        dependencies?.map(dep => (typeof dep === 'object' ? dep : ({ key: dep } as KeyWithOptions))) ?? []
 
       TypeRegistrar.configure<T>(
         target as TFunction,

@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import { expect } from 'expect'
-import { fmtTokenError } from '../errorFmt.js'
+import { fmtKeyError } from '../errorFmt.js'
 import { fmtParamError } from '../errorFmt.js'
 
 describe('Error Fmt', function () {
@@ -18,9 +18,9 @@ describe('Error Fmt', function () {
     expect(fromClazz).toContain(`property 'prop'`)
   })
 
-  it('fmtTokenError()', function () {
-    const tk = { token: 'test_token', tokenType: 'test_token_type' }
-    const fromTkType = fmtTokenError(tk)
+  it('fmtKeyError()', function () {
+    const tk = { key: 'test_token', tokenType: 'test_token_type' }
+    const fromTkType = fmtKeyError(tk)
 
     expect(fromTkType).toContain(`test_token`)
   })

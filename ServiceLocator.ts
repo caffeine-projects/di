@@ -1,4 +1,4 @@
-import { Token } from './Token.js'
+import { Key } from './Key'
 import { Container } from './Container.js'
 
 export interface LocatorOptions<A = unknown> {
@@ -6,11 +6,11 @@ export interface LocatorOptions<A = unknown> {
 }
 
 export abstract class ServiceLocator {
-  abstract get<T, A = unknown>(key: Token<T>, options?: Partial<LocatorOptions<A>>): T
+  abstract get<T, A = unknown>(key: Key<T>, options?: Partial<LocatorOptions<A>>): T
 
-  abstract getMany<T, A = unknown>(key: Token<T>, options?: Partial<LocatorOptions<A>>): T[]
+  abstract getMany<T, A = unknown>(key: Key<T>, options?: Partial<LocatorOptions<A>>): T[]
 
-  abstract has(key: Token): boolean
+  abstract has(key: Key): boolean
 }
 
 export class DefaultServiceLocator extends ServiceLocator {
@@ -18,15 +18,15 @@ export class DefaultServiceLocator extends ServiceLocator {
     super()
   }
 
-  get<T, A = unknown>(key: Token<T>, options?: Partial<LocatorOptions<A>>): T {
+  get<T, A = unknown>(key: Key<T>, options?: Partial<LocatorOptions<A>>): T {
     return this.container.get(key, options?.args)
   }
 
-  getMany<T, A = unknown>(key: Token<T>, options?: Partial<LocatorOptions<A>>): T[] {
+  getMany<T, A = unknown>(key: Key<T>, options?: Partial<LocatorOptions<A>>): T[] {
     return this.container.getMany(key, options?.args)
   }
 
-  has(key: Token): boolean {
+  has(key: Key): boolean {
     return this.container.has(key)
   }
 }

@@ -21,7 +21,7 @@ describe('Custom Binding Metadata', function () {
       ) {}
 
       static get [Symbols.injections]() {
-        return [Dep, kNm, { token: Opt, optional: true }]
+        return [Dep, kNm, { key: Opt, optional: true }]
       }
     }
 

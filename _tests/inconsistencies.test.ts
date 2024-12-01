@@ -6,7 +6,7 @@ import { ErrInvalidBinding } from '../internal/errors.js'
 import { Configuration } from '../decorators/Configuration'
 
 describe('Inconsistencies', function () {
-  it('should fail when passing a non named token to injectable', function () {
+  it('should fail when passing a non named key to injectable', function () {
     expect(() => {
       class Ref {}
 
@@ -15,7 +15,7 @@ describe('Inconsistencies', function () {
     }).toThrow(ErrInvalidBinding)
   })
 
-  it('should fail when using injectable on method level without passing a valid token', function () {
+  it('should fail when using injectable on method level without passing a valid key', function () {
     expect(() => {
       @Configuration()
       class Conf {

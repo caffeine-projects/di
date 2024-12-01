@@ -1,4 +1,4 @@
-import { tokenStr } from '../../Token.js'
+import { keyStr } from '../../Key'
 import { Container } from '../../Container.js'
 
 export function containerToString(container: Container): string {
@@ -7,16 +7,14 @@ export function containerToString(container: Container): string {
     '\n' +
     Array.from(container.entries())
       .map(
-        ([token, binding]) =>
-          `${tokenStr(token)}: ` +
-          `names=[${binding.names?.map(x => tokenStr(x)).join(', ')}], ` +
+        ([key, binding]) =>
+          `${keyStr(key)}: ` +
+          `names=[${binding.names?.map(x => keyStr(x)).join(', ')}], ` +
           `scope=${binding.scopeId.toString()}, ` +
           `injections=[${binding.injections
             ?.map(
               spec =>
-                '[' +
-                tokenStr(spec.token) +
-                `: optional=${spec.optional || false}, multiple=${spec.multiple || false}]`,
+                '[' + keyStr(spec.key) + `: optional=${spec.optional || false}, multiple=${spec.multiple || false}]`,
             )
             .join(', ')}], ` +
           `lazy=${binding.lazy}, ` +

@@ -1,12 +1,12 @@
-import { Token } from './Token.js'
+import { Key } from './Key'
 import { Binding } from './Binding.js'
 
 export interface Hooks {
-  onSetup: { token: Token; binding: Binding }
+  onSetup: { key: Key; binding: Binding }
 
-  onBindingRegistered: { token: Token; binding: Binding }
+  onBindingRegistered: { key: Key; binding: Binding }
 
-  onBindingNotRegistered: { token: Token; binding: Binding }
+  onBindingNotRegistered: { key: Key; binding: Binding }
 
   onSetupComplete: {}
 

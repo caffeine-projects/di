@@ -7,6 +7,6 @@ describe('inject()', function () {
     const k = Symbol.for('test')
     const result = inject(k, { optional: true, multiple: false, decorated: true })
 
-    expect(result).toEqual({ token: k, optional: true, multiple: false, decorated: true, objectDescriptor: undefined })
+    expect(result).toEqual({ key: k, optional: true, multiple: false, decorated: true, objectDescriptor: undefined })
   })
 })

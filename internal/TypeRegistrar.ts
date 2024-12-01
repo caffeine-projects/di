@@ -1,20 +1,20 @@
 import { newBinding } from '../Binding.js'
 import { Binding } from '../Binding.js'
-import { Token } from '../Token.js'
-import { tokenStr } from '../Token.js'
+import { Key } from '../Key'
+import { keyStr } from '../Key'
 import { notNil } from './utils/notNil.js'
 import { ErrRepeatedInjectableConfiguration } from './errors.js'
 import { mergeObject } from './utils/mergeObject.js'
 
 export namespace TypeRegistrar {
-  const _entries = new Map<Token, Binding>()
-  const _beans: Array<[Token, Binding]> = []
+  const _entries = new Map<Key, Binding>()
+  const _beans: Array<[Key, Binding]> = []
 
-  export function configure<T>(token: Token<T>, additional: Partial<Binding>, ready: boolean = true): Binding<T> {
-    notNil(token)
+  export function configure<T>(key: Key<T>, additional: Partial<Binding>, ready: boolean = true): Binding<T> {
+    notNil(key)
 
     const opts = { ready, ...additional }
-    const tk = typeof token === 'object' ? token.constructor : token
+    const tk = typeof key === 'object' ? key.constructor : key
     const existing = TypeRegistrar.get(tk)
 
     if (existing) {
@@ -23,8 +23,8 @@ export namespace TypeRegistrar {
       if (opts?.names) {
         if (names.some(value => opts.names!.includes(value))) {
           throw new ErrRepeatedInjectableConfiguration(
-            `Found repeated qualifiers for the class '${tokenStr(token)}'. Qualifiers found: ${opts.names
-              .map(x => tokenStr(x))
+            `Found repeated qualifiers for the class '${keyStr(key)}'. Qualifiers found: ${opts.names
+              .map(x => keyStr(x))
               .join(', ')}`,
           )
         }
@@ -54,44 +54,44 @@ export namespace TypeRegistrar {
     return info
   }
 
-  export function pre<T>(token: Token<T>, additional: Partial<Binding>): Binding<T> {
-    return configure(token, { ...additional }, false)
+  export function pre<T>(key: Key<T>, additional: Partial<Binding>): Binding<T> {
+    return configure(key, { ...additional }, false)
   }
 
   export function clearEntries() {
     _entries.clear()
   }
 
-  export function addBean<T>(token: Token<T>, binding: Binding<T>) {
-    notNil(token)
+  export function addBean<T>(key: Key<T>, binding: Binding<T>) {
+    notNil(key)
     notNil(binding)
 
-    _beans.push([token, binding])
+    _beans.push([key, binding])
   }
 
-  export function deleteBean(token: Token) {
-    notNil(token)
+  export function deleteBean(key: Key) {
+    notNil(key)
 
-    const idx = _beans.findIndex(([k]) => k === token)
+    const idx = _beans.findIndex(([k]) => k === key)
 
     if (idx > -1) {
       _beans.splice(idx, 1)
     }
   }
 
-  export function get<T>(ctor: Token<T>) {
+  export function get<T>(ctor: Key<T>) {
     return _entries.get(notNil(ctor))
   }
 
-  export function entries(): IterableIterator<[Token, Binding]> {
+  export function entries(): IterableIterator<[Key, Binding]> {
     return _entries.entries()
   }
 
-  export function beans(): Array<[Token, Binding]> {
+  export function beans(): Array<[Key, Binding]> {
     return _beans
   }
 
-  export function remove(token: Token): boolean {
-    return _entries.delete(notNil(token))
+  export function remove(key: Key): boolean {
+    return _entries.delete(notNil(key))
   }
 }

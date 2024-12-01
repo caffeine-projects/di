@@ -1,5 +1,5 @@
-import { tokenStr } from '../Token.js'
-import { Token } from '../Token.js'
+import { keyStr } from '../Key'
+import { Key } from '../Key'
 import { Named } from '../decorators/Named.js'
 import { Inject } from '../decorators/Inject.js'
 import { Primary } from '../decorators/Primary.js'
@@ -17,32 +17,32 @@ export class DiError extends Error {
   }
 }
 
-export class ErrNoUniqueInjectionForToken extends DiError {
-  constructor(token: Token) {
+export class ErrNoUniqueInjectionForKey extends DiError {
+  constructor(key: Key) {
     super(
-      `Found more than one injection for token '${tokenStr(token)}' when a single match was expected. ` +
+      `Found more than one injection for the key '${keyStr(key)}' when a single match was expected. ` +
         solutions(
           `- Use @${Named.name} to differentiate beans and inject the dependency using @${Inject.name}`,
           `- Use @${Primary.name} to specify a unique bean`,
           `- Use @${ConditionalOn.name} to conditionally register beans.`,
         ),
-      'NO_UNIQUE_INJECTION',
+      'ERR_NO_UNIQUE_INJECTION',
     )
-    this.name = 'NoUniqueInjectionForTokenError'
+    this.name = 'ErrNoUniqueInjectionForKey'
   }
 }
 
-export class ErrNoResolutionForToken extends DiError {
+export class ErrNoResolutionForKey extends DiError {
   constructor(message: string) {
-    super(message, 'NO_RESOLUTION_FOR_TOKEN')
-    this.name = 'NoResolutionForTokenError'
+    super(message, 'ERR_NO_RESOLUTION_FOR_KEY')
+    this.name = 'ErrNoResolutionForKey'
   }
 }
 
 export class ErrCircularReference extends DiError {
   constructor(message: string) {
-    super(message, 'CIRCULAR_REFERENCE')
-    this.name = 'CircularReferenceError'
+    super(message, 'ERR_CIRCULAR_REFERENCE')
+    this.name = 'ErrCircularReference'
   }
 }
 
@@ -52,28 +52,28 @@ export class ErrScopeNotRegistered extends DiError {
       `Scope ${String(scopeId)} is not registered! use DI.bindScope() static method to register it.`,
       'ERR_SCOPE_NOT_REGISTERED',
     )
-    this.name = 'ScopeNotRegisteredError'
+    this.name = 'ErrScopeNotRegistered'
   }
 }
 
 export class ErrScopeAlreadyRegistered extends DiError {
   constructor(scopeId: Identifier) {
-    super(`Scope ${scopeId.toString()} is already registered!`, 'SCOPE_ALREADY_REGISTERED')
-    this.name = 'ScopeAlreadyRegisteredError'
+    super(`Scope ${scopeId.toString()} is already registered!`, 'ERR_SCOPE_ALREADY_REGISTERED')
+    this.name = 'ErrScopeAlreadyRegistered'
   }
 }
 
 export class ErrRepeatedInjectableConfiguration extends DiError {
   constructor(message: string) {
-    super(message, 'REPEATED_INJECTABLE')
-    this.name = 'RepeatedInjectableConfigurationError'
+    super(message, 'ERR_REPEATED_INJECTABLE')
+    this.name = 'ErrRepeatedInjectableConfiguration'
   }
 }
 
 export class ErrInvalidBinding extends DiError {
   constructor(message: string) {
-    super(message, 'INVALID_BINDING')
-    this.name = 'InvalidBindingError'
+    super(message, 'ERR_INVALID_BINDING')
+    this.name = 'ErrInvalidBinding'
   }
 }
 
@@ -86,35 +86,35 @@ export class ErrInvalidDecorator extends DiError {
 
 export class ErrMultiplePrimary extends DiError {
   constructor(message: string) {
-    super(message, 'MULTIPLE_PRIMARY_SAME_COMPONENT')
-    this.name = 'MultiplePrimaryError'
+    super(message, 'ERR_MULTIPLE_PRIMARY_SAME_COMPONENT')
+    this.name = 'ErrMultiplePrimary'
   }
 }
 
 export class ErrIllegalScopeState extends DiError {
   constructor(message: string) {
-    super(message, 'ILLEGAL_SCOPE_STATE')
-    this.name = 'IllegalScopeStateError'
+    super(message, 'ERR_ILLEGAL_SCOPE_STATE')
+    this.name = 'ErrIllegalScopeState'
   }
 }
 
 export class ErrOutOfScope extends DiError {
   constructor(message: string) {
-    super(message, 'OUT_OF_SCOPE')
-    this.name = 'OutOfScopeError'
+    super(message, 'ERR_OUT_OF_SCOPE')
+    this.name = 'ErrOutOfScope'
   }
 }
 
 export class ErrInvalidInjection extends DiError {
   constructor(message: string) {
-    super(message, 'INVALID_INJECTION_TOKEN')
-    this.name = 'InvalidInjectionToken'
+    super(message, 'ERR_INVALID_INJECTION_KEY')
+    this.name = 'ErrInvalidInjectionKey'
   }
 }
 
 export class ErrMissingRequiredProviderArgument extends DiError {
   constructor(message: string) {
-    super(message, 'MISS_REQ_PROVIDER_ARG')
-    this.name = 'MissingRequiredProviderArgumentError'
+    super(message, 'ERR_MISS_REQ_PROVIDER_ARG')
+    this.name = 'ErrMissingRequiredProviderArgument'
   }
 }

@@ -1,8 +1,8 @@
 import { describe, it } from 'node:test'
 import { expect } from 'expect'
 import { Injectable } from '../decorators/Injectable.js'
-import { bagItem } from '../decorators/Bag.js'
-import { bagItems } from '../decorators/Bag.js'
+import { property } from '../injections/injection_to_object'
+import { propertyList } from '../injections/injection_to_object'
 import { DI } from '../DI.js'
 import { deps } from '../injections/injections.js'
 
@@ -27,10 +27,10 @@ describe('Injection Bag', function () {
 
   @Injectable([
     deps.object([
-      bagItem(Dep1, 'dep1'),
-      { token: Dep2, optional: true, key: 'dep2' },
-      bagItem(kDep, 'dep3'),
-      bagItem(Base, 'base', { multiple: true }),
+      property(Dep1, 'dep1'),
+      { key: Dep2, optional: true, property: 'dep2' },
+      property(kDep, 'dep3'),
+      property(Base, 'base', { multiple: true }),
     ]),
   ])
   class Root {
@@ -38,11 +38,11 @@ describe('Injection Bag', function () {
   }
 
   @Injectable([
-    deps.object([bagItem(Dep1, 'dep1'), { token: Dep2, optional: true, key: 'dep2' }]),
-    deps.object([bagItem(kDep, 'dep3')]),
+    deps.object([property(Dep1, 'dep1'), { key: Dep2, optional: true, property: 'dep2' }]),
+    deps.object([property(kDep, 'dep3')]),
     deps.optional(Dep2),
     deps.injectAll(Base),
-    deps.object([bagItems(Base, 'base')]),
+    deps.object([propertyList(Base, 'base')]),
   ])
   class DiffTypes {
     constructor(

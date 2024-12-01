@@ -65,7 +65,7 @@ describe('Lookup', function () {
       expect(root1.getTransient().id).not.toEqual(root1.getTransient().id)
     })
 
-    it('should return all resolutions from a token', function () {
+    it('should return all resolutions from a key', function () {
       const di = DI.setup()
       const root = di.get(Root)
 
@@ -127,7 +127,7 @@ describe('Lookup', function () {
     })
 
     describe('invalid configurations', function () {
-      it('should fail when injection token is undefined on method definition', function () {
+      it('should fail when injection key is undefined on method definition', function () {
         expect(() => {
           @Injectable()
           class Fail {

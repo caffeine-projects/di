@@ -7,8 +7,8 @@ import { TypeRegistrar } from './internal/TypeRegistrar.js'
 import { ErrRepeatedInjectableConfiguration } from './internal/errors.js'
 import { ErrScopeAlreadyRegistered } from './internal/errors.js'
 import { ErrCircularReference } from './internal/errors.js'
-import { ErrNoUniqueInjectionForToken } from './internal/errors.js'
-import { ErrNoResolutionForToken } from './internal/errors.js'
+import { ErrNoUniqueInjectionForKey } from './internal/errors.js'
+import { ErrNoResolutionForKey } from './internal/errors.js'
 import { ErrInvalidBinding } from './internal/errors.js'
 import { solutions } from './internal/errors.js'
 import { ErrScopeNotRegistered } from './internal/errors.js'
@@ -21,11 +21,11 @@ import { MethodInjectorInterceptor } from './internal/interceptors/MethodInjecto
 import { PostConstructInterceptor } from './internal/interceptors/PostConstructInterceptor.js'
 import { PostResolutionInterceptor } from './PostResolutionInterceptor.js'
 import { PropertiesInjectorInterceptor } from './internal/interceptors/PropertiesInjectorInterceptor.js'
-import { providerFromToken } from './Provider.js'
+import { providerFromKey } from './Provider.js'
 import { LocalResolutionScope } from './internal/scopes/LocalResolutionScope.js'
 import { ScopedProvider } from './internal/ScopedProvider.js'
 import { SingletonScope } from './internal/scopes/SingletonScope.js'
-import { TokenProvider } from './internal/providers/TokenProvider.js'
+import { SimpleKeyedProvider } from './internal/providers/SimpleKeyedProvider'
 import { TransientScope } from './internal/scopes/TransientScope.js'
 import { Lifecycle } from './Lifecycle.js'
 import { PostProcessor } from './PostProcessor.js'
@@ -33,9 +33,9 @@ import { Resolver } from './Resolver.js'
 import { Scope } from './Scope.js'
 import { DefaultServiceLocator } from './ServiceLocator.js'
 import { ServiceLocator } from './ServiceLocator.js'
-import { tokenStr } from './Token.js'
-import { isNamedToken, Token } from './Token.js'
-import { TokenDescriptor } from './Token.js'
+import { keyStr } from './Key'
+import { isNamedKey, Key } from './Key'
+import { KeyWithOptions } from './Key'
 import { isNil } from './internal/utils/isNil.js'
 import { loadModule } from './internal/utils/loadModule.js'
 import { notNil } from './internal/utils/notNil.js'
@@ -65,7 +65,7 @@ export class DI implements Container {
   protected readonly filters: Filter[] = []
   protected readonly bindingRegistry = new BindingRegistry()
   protected readonly namedBindings = new Map<Identifier, Binding[]>()
-  protected readonly multipleBeansRefCache = new Map<Token, Binding[]>()
+  protected readonly multipleBeansRefCache = new Map<Key, Binding[]>()
   protected readonly scopeId: Identifier
   protected readonly metadataReader: MetadataReader
   protected readonly lazy?: boolean
@@ -130,9 +130,9 @@ export class DI implements Container {
     await Promise.all(paths.map(path => loadModule(path)))
   }
 
-  static arg(token: Token, options?: Omit<TokenDescriptor, 'token'>): TokenDescriptor {
-    notNil(token)
-    return { token, ...options }
+  static arg(key: Key, options?: Omit<KeyWithOptions, 'key'>): KeyWithOptions {
+    notNil(key)
+    return { key, ...options }
   }
 
   protected static async preDestroyBinding(binding: Binding): Promise<void> {
@@ -151,7 +151,7 @@ export class DI implements Container {
       container.bind(scopeType).toValue(scope).singletonScoped().byPassPostProcessors()
 
       if (typeof identifier === 'symbol') {
-        container.bind(identifier).toToken(scopeType)
+        container.bind(identifier).toKey(scopeType)
       }
     }
   }
@@ -166,18 +166,18 @@ export class DI implements Container {
       .set(Lifecycle.REFRESH, new RefreshScope())
   }
 
-  configureBinding<T>(token: Token<T>, incoming: Binding<T>): void {
-    notNil(token)
+  configureBinding<T>(key: Key<T>, incoming: Binding<T>): void {
+    notNil(key)
     notNil(incoming)
 
-    const hasBag = incoming.injections.some(x => x.bag && x.bag.length > 0)
+    const hasBag = incoming.injections.some(x => x.objectInjections && x.objectInjections.length > 0)
 
     if (hasBag) {
       if (incoming.rawProvider && !(incoming.rawProvider instanceof ConstructorDestructuringProvider)) {
         throw new ErrInvalidBinding(
-          `Binding '${tokenStr(token)}' contains constructor @Bag() parameters but is using a different provider. ` +
+          `Binding '${keyStr(key)}' contains constructor @Bag() parameters but is using a different provider. ` +
             solutions(
-              `- Check if the component '${tokenStr(token)}' is using a custom provider and remove it. ` +
+              `- Check if the component '${keyStr(key)}' is using a custom provider and remove it. ` +
                 `When using constructor destructuring injection, 'ConstructorDestructuringProvider' need to be used`,
             ),
         )
@@ -186,37 +186,37 @@ export class DI implements Container {
       }
     }
 
-    const binding = { ...incoming, ...this.metadataReader.read(token) }
+    const binding = { ...incoming, ...this.metadataReader.read(key) }
     const scopeId = binding.scopeId ? binding.scopeId : this.scopeId
-    const rawProvider = providerFromToken(token, binding.rawProvider)
+    const rawProvider = providerFromKey(key, binding.rawProvider)
 
-    notNil(rawProvider, `Could not determine a provider for token: ${tokenStr(token)}`)
+    notNil(rawProvider, `Could not determine a provider for key: ${keyStr(key)}`)
 
-    if (rawProvider instanceof TokenProvider) {
-      const path = [token]
-      let tokenProvider: TokenProvider<any> | null = rawProvider
-      const ctx: ResolutionContext = { container: this, token, binding }
+    if (rawProvider instanceof SimpleKeyedProvider) {
+      const path = [key]
+      let simpleKeyedProvider: SimpleKeyedProvider<any> | null = rawProvider
+      const ctx: ResolutionContext = { container: this, key: key, binding }
 
-      while (tokenProvider !== null) {
-        const currentToken: Token = tokenProvider.provide(ctx)
+      while (simpleKeyedProvider !== null) {
+        const curKey: Key = simpleKeyedProvider.provide(ctx)
 
-        if (path.includes(currentToken)) {
-          throw new ErrCircularReference(`Token registration cycle detected! ${[...path, currentToken].join(' -> ')}`)
+        if (path.includes(curKey)) {
+          throw new ErrCircularReference(`Key registration cycle detected! ${[...path, curKey].join(' -> ')}`)
         }
 
-        path.push(currentToken)
+        path.push(curKey)
 
-        const binding: Binding | undefined = this.bindingRegistry.get(currentToken)
+        const binding: Binding | undefined = this.bindingRegistry.get(curKey)
 
-        if (binding && binding.rawProvider instanceof TokenProvider) {
-          tokenProvider = binding.rawProvider
+        if (binding && binding.rawProvider instanceof SimpleKeyedProvider) {
+          simpleKeyedProvider = binding.rawProvider
         } else {
-          tokenProvider = null
+          simpleKeyedProvider = null
         }
       }
     }
 
-    const scope = rawProvider instanceof TokenProvider ? DI.getScope(Lifecycle.TRANSIENT) : DI.getScope(scopeId)
+    const scope = rawProvider instanceof SimpleKeyedProvider ? DI.getScope(Lifecycle.TRANSIENT) : DI.getScope(scopeId)
     if (scope === undefined) {
       throw new ErrScopeNotRegistered(scopeId)
     }
@@ -226,16 +226,16 @@ export class DI implements Container {
     const hasLookups = binding.lookupProperties.size > 0
     const chain: PostResolutionInterceptor<T>[] = []
 
-    if (hasLookups && typeof token === 'function') {
+    if (hasLookups && typeof key === 'function') {
       for (const [propertyKey, spec] of binding.lookupProperties) {
-        const descriptor = Object.getOwnPropertyDescriptor(token.prototype, propertyKey)
+        const descriptor = Object.getOwnPropertyDescriptor(key.prototype, propertyKey)
 
         if (descriptor && typeof descriptor.get === 'function') {
-          Object.defineProperty(token.prototype, propertyKey, {
-            get: () => Resolver.resolveParam(this, token, spec, propertyKey),
+          Object.defineProperty(key.prototype, propertyKey, {
+            get: () => Resolver.resolveParam(this, key, spec, propertyKey),
           })
         } else {
-          token.prototype[propertyKey] = () => Resolver.resolveParam(this, token, spec, propertyKey)
+          key.prototype[propertyKey] = () => Resolver.resolveParam(this, key, spec, propertyKey)
         }
       }
     }
@@ -290,70 +290,70 @@ export class DI implements Container {
           ? this.lazy
           : binding.lazy
 
-    this.bindingRegistry.register(token, binding)
+    this.bindingRegistry.register(key, binding)
     this.mapNamed(binding)
 
     scope.configure?.(binding)
   }
 
-  get<T, A = unknown>(token: Token<T>, args?: A): T {
-    const bindings = this.getBindings<T>(token)
+  get<T, A = unknown>(key: Key<T>, args?: A): T {
+    const bindings = this.getBindings<T>(key)
 
     if (bindings.length > 1) {
       for (const binding of bindings) {
         if (binding.primary) {
-          return Resolver.resolve<T>(this, token, binding, args)
+          return Resolver.resolve<T>(this, key, binding, args)
         }
       }
 
-      throw new ErrNoUniqueInjectionForToken(token)
+      throw new ErrNoUniqueInjectionForKey(key)
     }
 
-    return Resolver.resolve<T>(this, token, bindings[0], args)
+    return Resolver.resolve<T>(this, key, bindings[0], args)
   }
 
-  getRequired<T, A = unknown>(token: Token<T>, args?: A): T {
-    const result = this.get(token, args)
+  getRequired<T, A = unknown>(key: Key<T>, args?: A): T {
+    const result = this.get(key, args)
 
     if (isNil(result)) {
-      throw new ErrNoResolutionForToken(`Unable to resolve required injection for token '${tokenStr(token)}'`)
+      throw new ErrNoResolutionForKey(`Unable to resolve required injection for key '${keyStr(key)}'`)
     }
 
     return result
   }
 
-  getMany<T, A = unknown>(token: Token<T>, args?: A): T[] {
-    const bindings = this.getBindings(token)
+  getMany<T, A = unknown>(key: Key<T>, args?: A): T[] {
+    const bindings = this.getBindings(key)
 
     if (bindings.length === 0) {
-      if (this.multipleBeansRefCache.has(token)) {
-        const bindings = this.multipleBeansRefCache.get(token) as Binding[]
+      if (this.multipleBeansRefCache.has(key)) {
+        const bindings = this.multipleBeansRefCache.get(key) as Binding[]
         const resolved = new Array(bindings.length)
         for (let i = 0; i < bindings.length; i++) {
-          resolved[i] = Resolver.resolve(this, token, bindings[i], args)
+          resolved[i] = Resolver.resolve(this, key, bindings[i], args)
         }
 
         return resolved
       }
 
-      let entries = this.search(tk => tk !== token && token.isPrototypeOf(tk))
+      let entries = this.search(tk => tk !== key && key.isPrototypeOf(tk))
 
       if (entries.length === 0) {
-        entries = this.search((_tk, binding) => binding.type === token)
+        entries = this.search((_tk, binding) => binding.type === key)
       }
 
       if (entries.length === 0) {
         return []
       } else {
         this.multipleBeansRefCache.set(
-          token,
+          key,
           entries.map(entry => entry.binding),
         )
       }
 
       const resolved = new Array<T>(entries.length)
       for (let i = 0; i < entries.length; i++) {
-        resolved[i] = Resolver.resolve<T>(this, token, entries[i].binding, args)
+        resolved[i] = Resolver.resolve<T>(this, key, entries[i].binding, args)
       }
 
       return resolved
@@ -361,98 +361,98 @@ export class DI implements Container {
 
     const resolved = new Array<T>(bindings.length)
     for (let i = 0; i < bindings.length; i++) {
-      resolved[i] = Resolver.resolve<T>(this, token, bindings[i], args)
+      resolved[i] = Resolver.resolve<T>(this, key, bindings[i], args)
     }
 
     return resolved
   }
 
-  getAsync<T, A = unknown>(token: Token<T>, args?: A): Promise<T> {
-    const bindings = this.getBindings<T>(token)
+  getAsync<T, A = unknown>(key: Key<T>, args?: A): Promise<T> {
+    const bindings = this.getBindings<T>(key)
 
     if (bindings.length > 1) {
       for (const binding of bindings) {
         if (binding.primary) {
-          return AsyncResolver.resolveAsync<T>(this, token, binding, args)
+          return AsyncResolver.resolveAsync<T>(this, key, binding, args)
         }
       }
 
-      throw new ErrNoUniqueInjectionForToken(token)
+      throw new ErrNoUniqueInjectionForKey(key)
     }
 
-    return AsyncResolver.resolveAsync<T>(this, token, bindings[0], args)
+    return AsyncResolver.resolveAsync<T>(this, key, bindings[0], args)
   }
 
-  has<T>(token: Token<T>, checkParent = false): boolean {
-    return this.bindingRegistry.has(token) || (checkParent && (this.parent || false) && this.parent.has(token, true))
+  has<T>(key: Key<T>, checkParent = false): boolean {
+    return this.bindingRegistry.has(key) || (checkParent && (this.parent || false) && this.parent.has(key, true))
   }
 
-  search(predicate: <T>(token: Token<T>, binding: Binding) => boolean): BindingEntry[] {
+  search(predicate: <T>(key: Key<T>, binding: Binding) => boolean): BindingEntry[] {
     notNil(predicate)
 
     const result: BindingEntry[] = []
 
-    for (const [token, registrations] of this.bindingRegistry.entries()) {
-      if (predicate(token, registrations)) {
-        result.push({ token, binding: registrations })
+    for (const [key, registrations] of this.bindingRegistry.entries()) {
+      if (predicate(key, registrations)) {
+        result.push({ key: key, binding: registrations })
       }
     }
 
     return result
   }
 
-  bind<T>(token: Token<T>): Binder<T> {
-    notNil(token)
+  bind<T>(key: Key<T>): Binder<T> {
+    notNil(key)
 
-    const type = TypeRegistrar.get(token)
+    const type = TypeRegistrar.get(key)
     const binding = newBinding(type)
 
-    this.configureBinding(token, binding)
+    this.configureBinding(key, binding)
 
-    return new BindTo<T>(this, token, { ...binding })
+    return new BindTo<T>(this, key, { ...binding })
   }
 
-  unbind<T>(token: Token<T>): void {
-    notNil(token)
+  unbind<T>(key: Key<T>): void {
+    notNil(key)
 
-    if (this.has(token)) {
-      return this.unref(token)
+    if (this.has(key)) {
+      return this.unref(key)
     }
 
     if (this.parent) {
-      this.parent.unbind(token)
+      this.parent.unbind(key)
     }
   }
 
-  async unbindAsync<T>(token: Token<T>): Promise<void> {
-    notNil(token)
+  async unbindAsync<T>(key: Key<T>): Promise<void> {
+    notNil(key)
 
-    if (this.has(token)) {
-      const bindings = this.getBindings(token)
+    if (this.has(key)) {
+      const bindings = this.getBindings(key)
 
       for (const binding of bindings) {
         if (binding.preDestroy) {
-          await DI.preDestroyBinding(binding).finally(() => this.unref(token))
+          await DI.preDestroyBinding(binding).finally(() => this.unref(key))
         }
       }
 
-      this.unref(token)
+      this.unref(key)
     }
 
     if (this.parent) {
-      return this.parent.unbindAsync(token)
+      return this.parent.unbindAsync(key)
     }
 
     return Promise.resolve()
   }
 
-  rebind<T>(token: Token<T>): Binder<T> {
-    this.unbind(token)
-    return this.bind(token)
+  rebind<T>(key: Key<T>): Binder<T> {
+    this.unbind(key)
+    return this.bind(key)
   }
 
-  rebindAsync<T>(token: Token<T>): Promise<Binder<T>> {
-    return this.unbindAsync(token).then(() => this.bind(token))
+  rebindAsync<T>(key: Key<T>): Promise<Binder<T>> {
+    return this.unbindAsync(key).then(() => this.bind(key))
   }
 
   newChild(): Container {
@@ -472,9 +472,9 @@ export class DI implements Container {
       child.addPostProcessor(value)
     }
 
-    for (const [token, binding] of this.bindingRegistry.entries()) {
+    for (const [key, binding] of this.bindingRegistry.entries()) {
       if (binding.scopeId === Lifecycle.CONTAINER) {
-        child.bindingRegistry.register(token, newBinding({ ...binding, id: undefined }))
+        child.bindingRegistry.register(key, newBinding({ ...binding, id: undefined }))
       }
     }
 
@@ -483,18 +483,18 @@ export class DI implements Container {
     return child
   }
 
-  getBindings<T>(token: Token<T>): Binding<T>[] {
-    const binding = this.bindingRegistry.get(token)
+  getBindings<T>(key: Key<T>): Binding<T>[] {
+    const binding = this.bindingRegistry.get(key)
     if (binding) {
       return [binding]
     }
 
     if (this.parent) {
-      return this.parent.getBindings(token)
+      return this.parent.getBindings(key)
     }
 
-    if (isNamedToken(token)) {
-      return this.namedBindings.get(token) || []
+    if (isNamedKey(key)) {
+      return this.namedBindings.get(key) || []
     }
 
     return []
@@ -522,24 +522,24 @@ export class DI implements Container {
     }
   }
 
-  resetInstance(token: Token): void {
-    notNil(token)
+  resetInstance(key: Key): void {
+    notNil(key)
 
-    const bindings = this.getBindings(token)
+    const bindings = this.getBindings(key)
 
     for (const binding of bindings) {
       DI.getScope(binding.scopeId)?.remove(binding)
     }
   }
 
-  async resetInstanceAsync(token: Token): Promise<void> {
-    notNil(token)
+  async resetInstanceAsync(key: Key): Promise<void> {
+    notNil(key)
 
-    const bindings = this.getBindings(token)
+    const bindings = this.getBindings(key)
 
     for (const binding of bindings) {
       if (binding.preDestroy) {
-        await DI.preDestroyBinding(binding).finally(() => this.unref(token))
+        await DI.preDestroyBinding(binding).finally(() => this.unref(key))
       }
 
       DI.getScope(binding.scopeId)?.remove(binding)
@@ -547,24 +547,24 @@ export class DI implements Container {
   }
 
   initInstances(): void {
-    for (const [token, binding] of this.bindingRegistry.entries()) {
+    for (const [key, binding] of this.bindingRegistry.entries()) {
       if (
         !binding.lazy &&
         (binding.scopeId === Lifecycle.SINGLETON ||
           binding.scopeId === Lifecycle.CONTAINER ||
           binding.scopeId === Lifecycle.REFRESH)
       ) {
-        Resolver.resolve(this, token, binding)
+        Resolver.resolve(this, key, binding)
       }
     }
   }
 
   dispose(): Promise<void> {
     const destroyers: Promise<void | RejectionWrapper>[] = []
-    const tokens: Token[] = []
+    const keys: Key[] = []
 
-    for (const [token, binding] of this.bindingRegistry.entries()) {
-      tokens.push(token)
+    for (const [key, binding] of this.bindingRegistry.entries()) {
+      keys.push(key)
 
       if (binding.preDestroy) {
         destroyers.push(DI.preDestroyBinding(binding).catch(err => new RejectionWrapper(err)))
@@ -573,8 +573,8 @@ export class DI implements Container {
 
     return Promise.all(destroyers)
       .then(results => {
-        for (const token of tokens) {
-          this.resetInstance(token)
+        for (const k of keys) {
+          this.resetInstance(k)
         }
 
         const rejections: RejectionWrapper[] = results.filter(x => x instanceof RejectionWrapper) as RejectionWrapper[]
@@ -593,56 +593,54 @@ export class DI implements Container {
   }
 
   setup(): void {
-    for (const [token, binding] of TypeRegistrar.entries()) {
-      this.hooks.emit('onSetup', { token, binding })
+    for (const [key, binding] of TypeRegistrar.entries()) {
+      this.hooks.emit('onSetup', { key: key, binding })
 
-      if (!this.isRegistrable(binding) || !this.filter(token, binding)) {
-        this.hooks.emit('onBindingNotRegistered', { token, binding })
+      if (!this.isRegistrable(binding) || !this.filter(key, binding)) {
+        this.hooks.emit('onBindingNotRegistered', { key: key, binding })
         continue
       }
 
-      const pass = binding.conditionals.every(conditional => conditional({ container: this, token, binding }))
+      const pass = binding.conditionals.every(conditional => conditional({ container: this, key: key, binding }))
 
       if (pass) {
-        this.configureBinding(token, binding)
-        this.hooks.emit('onBindingRegistered', { token, binding })
+        this.configureBinding(key, binding)
+        this.hooks.emit('onBindingRegistered', { key: key, binding })
       } else {
         if (binding.configuration) {
-          for (const tk of binding.tokensProvided) {
+          for (const tk of binding.keysProvided) {
             TypeRegistrar.deleteBean(tk)
           }
         }
 
-        this.hooks.emit('onBindingNotRegistered', { token, binding })
+        this.hooks.emit('onBindingNotRegistered', { key: key, binding })
       }
     }
 
-    for (const [token, binding] of TypeRegistrar.beans()) {
-      this.hooks.emit('onSetup', { token, binding })
+    for (const [key, binding] of TypeRegistrar.beans()) {
+      this.hooks.emit('onSetup', { key: key, binding })
 
-      if (!this.isRegistrable(binding) || !this.filter(token, binding)) {
-        this.hooks.emit('onBindingNotRegistered', { token, binding })
+      if (!this.isRegistrable(binding) || !this.filter(key, binding)) {
+        this.hooks.emit('onBindingNotRegistered', { key: key, binding })
         continue
       }
 
       const pass =
         binding.conditionals === undefined
           ? true
-          : binding.conditionals.every(conditional => conditional({ container: this, token, binding }))
+          : binding.conditionals.every(conditional => conditional({ container: this, key: key, binding }))
 
       if (pass) {
-        if (this.has(token) && !this.overriding) {
+        if (this.has(key) && !this.overriding) {
           throw new ErrRepeatedInjectableConfiguration(
-            `Found multiple beans with the same injection token '${tokenStr(token)}' configured at '${
-              binding.configuredBy
-            }'`,
+            `Found multiple beans with the same injection key '${keyStr(key)}' configured at '${binding.configuredBy}'`,
           )
         }
 
-        this.configureBinding(token, binding)
-        this.hooks.emit('onBindingRegistered', { token, binding })
+        this.configureBinding(key, binding)
+        this.hooks.emit('onBindingRegistered', { key: key, binding })
       } else {
-        this.hooks.emit('onBindingNotRegistered', { token, binding })
+        this.hooks.emit('onBindingNotRegistered', { key: key, binding })
       }
     }
 
@@ -651,19 +649,19 @@ export class DI implements Container {
     this.hooks.emit('onSetupComplete')
   }
 
-  *configurationBeans(): IterableIterator<Token> {
-    for (const [token, binding] of this.bindingRegistry.entries()) {
+  *configurationBeans(): IterableIterator<Key> {
+    for (const [key, binding] of this.bindingRegistry.entries()) {
       if (binding.configuration) {
-        yield token
+        yield key
       }
     }
   }
 
-  types(): IterableIterator<[Token, Binding]> {
+  types(): IterableIterator<[Key, Binding]> {
     return TypeRegistrar.entries()
   }
 
-  entries(): IterableIterator<[Token, Binding]> {
+  entries(): IterableIterator<[Key, Binding]> {
     return this.bindingRegistry.entries()
   }
 
@@ -675,7 +673,7 @@ export class DI implements Container {
     return containerToString(this)
   }
 
-  [Symbol.iterator](): IterableIterator<[Token, Binding]> {
+  [Symbol.iterator](): IterableIterator<[Key, Binding]> {
     return this.bindingRegistry.entries()
   }
 
@@ -698,14 +696,14 @@ export class DI implements Container {
     }
   }
 
-  protected unref(token: Token) {
-    const bindings = this.getBindings(token)
+  protected unref(key: Key) {
+    const bindings = this.getBindings(key)
 
-    this.bindingRegistry.delete(token)
-    this.multipleBeansRefCache.delete(token)
+    this.bindingRegistry.delete(key)
+    this.multipleBeansRefCache.delete(key)
 
-    if (isNamedToken(token)) {
-      this.namedBindings.delete(token)
+    if (isNamedKey(key)) {
+      this.namedBindings.delete(key)
     }
 
     for (const binding of bindings) {
@@ -713,7 +711,7 @@ export class DI implements Container {
     }
   }
 
-  protected filter(token: Token, binding: Binding): boolean {
-    return this.filters.every(filter => !filter({ token, binding }))
+  protected filter(key: Key, binding: Binding): boolean {
+    return this.filters.every(filter => !filter({ key: key, binding }))
   }
 }

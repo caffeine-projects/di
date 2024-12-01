@@ -1,6 +1,6 @@
 import { configureInjectionMetadata } from './util/decorator_metadata'
-import { Token } from '../Token.js'
+import { Key } from '../Key'
 
-export function Optional(token?: Token<unknown>) {
-  return configureInjectionMetadata({ token, optional: true })
+export function Optional(key?: Key<unknown>) {
+  return configureInjectionMetadata({ key, optional: true })
 }

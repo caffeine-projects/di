@@ -1,9 +1,9 @@
-import { tokenStr } from '../../Token.js'
-import { TokenDescriptor } from '../../Token.js'
-import { Token } from '../../Token.js'
+import { keyStr } from '../../Key'
+import { KeyWithOptions } from '../../Key'
+import { Key } from '../../Key'
 import { isNil } from './isNil.js'
 
-export function fmtParamError(ctor: Token, indexOrProp: number | (string | symbol)): string {
+export function fmtParamError(ctor: Key, indexOrProp: number | (string | symbol)): string {
   const isNum = typeof indexOrProp === 'number'
   const msg = isNum ? `parameter at position '${indexOrProp}'` : `property '${String(indexOrProp)}'`
 
@@ -24,6 +24,6 @@ export function fmtParamError(ctor: Token, indexOrProp: number | (string | symbo
   return msg
 }
 
-export function fmtTokenError(spec: TokenDescriptor): string {
-  return `'${tokenStr(spec.token)}'`
+export function fmtKeyError(spec: KeyWithOptions): string {
+  return `'${keyStr(spec.key)}'`
 }

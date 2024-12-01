@@ -2,18 +2,18 @@ import { ResolutionContext } from '../../ResolutionContext.js'
 import { PostResolutionInterceptor } from '../../PostResolutionInterceptor.js'
 import { Resolver } from '../../Resolver.js'
 import { Ctor } from '../types.js'
-import { Token } from '../../Token.js'
-import { tokenStr } from '../../Token.js'
-import { isNamedToken } from '../../Token.js'
-import { ErrNoUniqueInjectionForToken } from '../errors.js'
-import { ErrNoResolutionForToken } from '../errors.js'
+import { Key } from '../../Key'
+import { keyStr } from '../../Key'
+import { isNamedKey } from '../../Key'
+import { ErrNoUniqueInjectionForKey } from '../errors.js'
+import { ErrNoResolutionForKey } from '../errors.js'
 import { solutions } from '../errors.js'
 import { ErrInvalidBinding } from '../errors.js'
 import { Injectable } from '../../decorators/Injectable.js'
 import { Bean } from '../../decorators/Bean.js'
 
 export class DecorateInterceptor<T> implements PostResolutionInterceptor<T> {
-  constructor(private readonly decorator: Token) {}
+  constructor(private readonly decorator: Key) {}
 
   intercept(instance: T, ctx: ResolutionContext): T {
     const binding = DecorateInterceptor.uniqueBinding(ctx, this.decorator)
@@ -21,19 +21,19 @@ export class DecorateInterceptor<T> implements PostResolutionInterceptor<T> {
 
     if (decoratees.length === 0) {
       throw new ErrInvalidBinding(
-        `Decorator '${tokenStr(this.decorator)}' for '${tokenStr(
-          ctx.token,
+        `Decorator '${keyStr(this.decorator)}' for '${keyStr(
+          ctx.key,
         )}' must have 1 constructor parameter decorated with '@Decoratee()'`,
       )
     }
 
     if (decoratees.length > 1) {
       throw new ErrInvalidBinding(
-        `Decorator '${tokenStr(this.decorator)}' for '${tokenStr(ctx.token)}' contains '${
+        `Decorator '${keyStr(this.decorator)}' for '${keyStr(ctx.key)}' contains '${
           decoratees.length
         }' parameters decorated with '@Decoratee()'. It must have only 1 constructor parameter as the decoratee. ` +
           solutions(
-            `- Check the decorator class '${tokenStr(
+            `- Check the decorator class '${keyStr(
               this.decorator,
             )}' constructor and ensure it contains only 1 '@Decoratee()' parameter`,
           ),
@@ -48,25 +48,25 @@ export class DecorateInterceptor<T> implements PostResolutionInterceptor<T> {
       if (injection.decorated) {
         args[i] = instance
       } else {
-        args[i] = Resolver.resolveParam(ctx.container, ctx.token, injection, i, ctx.args)
+        args[i] = Resolver.resolveParam(ctx.container, ctx.key, injection, i, ctx.args)
       }
     }
 
-    if (isNamedToken(this.decorator)) {
+    if (isNamedKey(this.decorator)) {
       if (typeof binding.type === 'function') {
         return new (binding.type as Ctor)(...args)
       } else {
-        throw new ErrNoResolutionForToken(
-          `Unable to resolve decorator '${tokenStr(this.decorator)}' for class '${tokenStr(
-            ctx.token,
-          )}'. Reason: Couldn't find a valid decorator class to construct. Decorator token is named and the binding type is: '${
+        throw new ErrNoResolutionForKey(
+          `Unable to resolve decorator '${keyStr(this.decorator)}' for class '${keyStr(
+            ctx.key,
+          )}'. Reason: Couldn't find a valid decorator class to construct. Decorator Key is named and the binding type is: '${
             binding.type
           }' of type '${typeof binding.type}'` +
             solutions(
-              `- Check if the named injection token '${tokenStr(
+              `- Check if the named injection Key '${keyStr(
                 this.decorator,
-              )}' is pointing to a valid decorator class and the decorator has the same structure of '${tokenStr(
-                ctx.token,
+              )}' is pointing to a valid decorator class and the decorator has the same structure of '${keyStr(
+                ctx.key,
               )}'`,
             ),
         )
@@ -76,16 +76,14 @@ export class DecorateInterceptor<T> implements PostResolutionInterceptor<T> {
     }
   }
 
-  private static uniqueBinding(ctx: ResolutionContext, token: Token) {
-    const bindings = ctx.container.getBindings(token)
+  private static uniqueBinding(ctx: ResolutionContext, Key: Key) {
+    const bindings = ctx.container.getBindings(Key)
 
     if (bindings.length === 0) {
-      throw new ErrNoResolutionForToken(
-        `Unable to resolve decorator '${tokenStr(token)}' for class '${tokenStr(
-          ctx.token,
-        )}'. Reason: Found 0 registrations. ` +
+      throw new ErrNoResolutionForKey(
+        `Unable to resolve decorator '${keyStr(Key)}' for class '${keyStr(ctx.key)}'. Reason: Found 0 registrations. ` +
           solutions(
-            `- Check if the decorator '${tokenStr(token)}' is correctly decorated with '@${Injectable.name}' or '@${
+            `- Check if the decorator '${keyStr(Key)}' is correctly decorated with '@${Injectable.name}' or '@${
               Bean.name
             }'`,
             `- Check if the decorator is correctly imported in any place before resolution`,
@@ -99,7 +97,7 @@ export class DecorateInterceptor<T> implements PostResolutionInterceptor<T> {
       if (primary) {
         return primary
       } else {
-        throw new ErrNoUniqueInjectionForToken(token)
+        throw new ErrNoUniqueInjectionForKey(Key)
       }
     } else {
       return bindings[0]

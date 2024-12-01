@@ -1,5 +1,5 @@
-import { Injection } from '../Token'
-import { TokenDescriptor } from '../Token'
+import { Injection } from '../Key'
+import { KeyWithOptions } from '../Key'
 import { Identifier } from '../internal/types'
 import { Ctor } from '../internal/types'
 import { getOrCreateBeanMetadata } from '../internal/utils/beanUtils'
@@ -41,31 +41,31 @@ export function Configuration<T>(
   return function <TFunction extends Function>(target: TFunction, context: ClassDecoratorContext) {
     const config: Partial<ConfigurationOptions> = Array.isArray(configOrInjections) ? {} : (configOrInjections ?? {})
     const deps = Array.isArray(configOrInjections) ? configOrInjections : dependencies
-    const injections: TokenDescriptor[] = deps.map(dep =>
-      typeof dep === 'object' ? (dep as TokenDescriptor) : { token: dep },
+    const injections: KeyWithOptions[] = deps.map(dep =>
+      typeof dep === 'object' ? (dep as KeyWithOptions) : ({ key: dep } as KeyWithOptions),
     )
     const metadata = getOrCreateBeanMetadata(context.metadata)
     const beanConfiguration = metadata.methods
     const configurations = Array.from(beanConfiguration.entries()).map(([_, options]) => options)
-    const tokens = configurations.map(x => x.token)
+    const keys = configurations.map(x => x.key)
 
     TypeRegistrar.configure<T>(target, {
       injections: injections,
       namespace: config.namespace,
       configuration: true,
-      tokensProvided: tokens,
+      keysProvided: keys,
     })
 
     for (const [method, factory] of beanConfiguration) {
-      if (factory.token === undefined) {
+      if (factory.key === undefined) {
         throw new ErrInvalidBinding(
-          `No injection token defined for bean configured on method '${String(method)}' at the configuration class '${
+          `No injection key defined for the bean configured on method '${String(method)}' at the configuration class '${
             target.name
-          }'.` +
+          }'.\n` +
             solutions(
               `- Ensure the method '${String(method)}' is decorated with '@${Bean.name}' or '@${
                 Injectable.name
-              }' and has the injection token passed as a parameter`,
+              }' and has the injection key passed as a parameter`,
             ),
         )
       }
@@ -79,7 +79,7 @@ export function Configuration<T>(
         late: isNil(config.late) ? factory.late : config.late,
         conditionals: [...factory.conditionals],
         names: [...factory.names],
-        type: factory.type || (typeof factory.token === 'function' ? factory.token : undefined),
+        type: factory.type || (typeof factory.key === 'function' ? factory.key : undefined),
         rawProvider: new BeanFactoryProvider(target as unknown as Ctor<T>, method, factory),
         options: factory.options,
         configuredBy: `${target.name}/${String(method)}`,
@@ -87,7 +87,7 @@ export function Configuration<T>(
         interceptors: [...factory.interceptors],
       })
 
-      TypeRegistrar.addBean(factory.token, { ...binding })
+      TypeRegistrar.addBean(factory.key, { ...binding })
     }
   }
 }

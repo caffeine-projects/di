@@ -254,14 +254,14 @@ describe('Manual Binding', function () {
       })
     })
 
-    describe('binding previous bound type to a another token', function () {
-      it('should return the previous bound type based on the token', function () {
+    describe('binding previous bound type to a another key', function () {
+      it('should return the previous bound type based on the key', function () {
         const di = DI.setup()
         const first = 'first'
         const other = 'other'
 
         di.bind(first).toValue('test')
-        di.bind(other).toToken(first)
+        di.bind(other).toKey(first)
 
         expect(di.get(other)).toEqual('test')
       })

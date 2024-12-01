@@ -2,7 +2,7 @@ import { describe, it } from 'node:test'
 import { expect } from 'expect'
 import { newBinding } from '../Binding.js'
 import { DI } from '../DI.js'
-import { TokenProvider } from '../internal/providers/TokenProvider.js'
+import { SimpleKeyedProvider } from '../internal/providers/SimpleKeyedProvider'
 import { Bar } from './_testdata/circular/Bar.js'
 import { Foo } from './_testdata/circular/Foo.js'
 
@@ -34,9 +34,9 @@ describe('Circular References', function () {
     it('should throw error', function () {
       const di = DI.setup()
 
-      di.configureBinding('foo', newBinding({ rawProvider: new TokenProvider('foo') }))
+      di.configureBinding('foo', newBinding({ rawProvider: new SimpleKeyedProvider('foo') }))
 
-      expect(() => di.configureBinding('foo', newBinding({ rawProvider: new TokenProvider('foo') }))).toThrow()
+      expect(() => di.configureBinding('foo', newBinding({ rawProvider: new SimpleKeyedProvider('foo') }))).toThrow()
     })
   })
 })
