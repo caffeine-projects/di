@@ -12,7 +12,6 @@ export function Injectable<T>(tokenOrDependencies?: Token | Injection[], depende
     context: ClassDecoratorContext | ClassMethodDecoratorContext,
   ) {
     dependencies = dependencies || []
-    const expectedInjections = target.length
 
     let token =
       tokenOrDependencies !== undefined && !Array.isArray(tokenOrDependencies) ? tokenOrDependencies : undefined
