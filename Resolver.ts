@@ -36,8 +36,10 @@ export const Resolver = {
       const entries = container.search(criteria)
 
       if (entries.length === 1) {
-        const tk = entries[0].key
-        resolved = container.get<T>(tk, args)
+        const entry = entries[0]
+        const tk = entry.key
+
+        resolved = Resolver.resolve(container, tk, entry.binding, args)
 
         container.configureBinding(key, newBinding({ rawProvider: new SimpleKeyedProvider(tk) }))
       } else if (entries.length > 1) {
@@ -55,7 +57,7 @@ export const Resolver = {
         if (primaries.length === 1) {
           const primary = primaries[0]
 
-          resolved = container.get<T>(primary.key, args)
+          resolved = Resolver.resolve(container, primary.key, primary.binding, args)
 
           container.configureBinding(key, newBinding({ ...primary, rawProvider: new SimpleKeyedProvider(primary.key) }))
         } else {
@@ -68,6 +70,10 @@ export const Resolver = {
   },
 
   construct<T, A = unknown>(container: Container, ctor: Ctor<T>, binding: Binding, args?: A): T {
+    if (binding.injections.length === 0) {
+      return new ctor()
+    }
+
     const params = new Array(binding.injections.length)
     for (let i = 0; i < binding.injections.length; i++) {
       params[i] = Resolver.resolveParam(container, ctor, binding.injections[i], i, args)
