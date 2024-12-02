@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { injectable } from 'inversify'
 import { Container } from 'inversify'
 
