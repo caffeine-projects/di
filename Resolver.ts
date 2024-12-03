@@ -13,7 +13,6 @@ import { Key } from './Key'
 import { KeyWithOptions } from './Key'
 import { fmtKeyError } from './internal/utils/errorFmt.js'
 import { fmtParamError } from './internal/utils/errorFmt.js'
-import { Ctor } from './internal/types.js'
 import { Container } from './Container.js'
 import { Optional } from './decorators/Optional.js'
 import { Primary } from './decorators/Primary.js'
@@ -67,19 +66,6 @@ export const Resolver = {
     }
 
     return resolved as T
-  },
-
-  construct<T, A = unknown>(container: Container, ctor: Ctor<T>, binding: Binding, args?: A): T {
-    if (binding.injections.length === 0) {
-      return new ctor()
-    }
-
-    const params = new Array(binding.injections.length)
-    for (let i = 0; i < binding.injections.length; i++) {
-      params[i] = Resolver.resolveParam(container, ctor, binding.injections[i], i, args)
-    }
-
-    return new ctor(...params)
   },
 
   resolveParam<T, A = unknown>(
