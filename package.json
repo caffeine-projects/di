@@ -35,7 +35,7 @@
     "@types/node": "^22.9.0",
     "@types/supertest": "^6.0.2",
     "@types/uuid": "^10.0.0",
-    "@typescript-eslint/eslint-plugin": "^8.8.0",
+    "@typescript-eslint/eslint-plugin": "^8.16.0",
     "colorette": "^2.0.20",
     "eslint": "^8.57.0",
     "eslint-plugin-import": "^2.31.0",
